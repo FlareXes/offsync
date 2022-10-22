@@ -4,7 +4,7 @@ import os.path
 from offsync import DATABASE
 
 
-def _load_profiles():
+def load_profiles():
     with open(DATABASE, "r") as f:
         return json.load(f)
 
@@ -15,11 +15,17 @@ def _dump_profiles(profiles):
 
 
 def save_profile(profile):
-    profiles = _load_profiles()
+    profiles = load_profiles()
     total_profiles = len(profiles)
     profile[total_profiles + 1] = profile['1']
     del profile['1']
     profiles.update(profile)
+    _dump_profiles(profiles)
+
+
+def delete_profile(_id):
+    profiles = load_profiles()
+    del profiles[_id]
     _dump_profiles(profiles)
 
 

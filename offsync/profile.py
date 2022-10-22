@@ -1,12 +1,12 @@
 from offsync.storage import save_profile
 
 
-def create_profile(site, username, salt, length):
+def create_profile(site, username, counter, length):
     p = {
         '1': {
             "site": site,
             "username": username,
-            "salt": salt,
+            "counter": counter,
             "length": length
         }
     }

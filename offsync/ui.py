@@ -17,10 +17,15 @@ class _Table:
 
     def add_row(self, _id, profile):
         # self.table.add_row(f"[magenta]{str(i + 1)}[/ magenta] [bold white]>[/bold white] {todo}")
-        site, username, salt, length = unpack_dict(**profile)
-        row_format = f"{_id} > {site} > {username} > {salt} > {length}"
+        site, username, counter, length = unpack_dict(**profile)
+        row_format = f"{_id} > {site} > {username} > {counter} > {length}"
         self.table.add_row(row_format)
 
     def tabulate(self):
         console = Console()
         console.print(self.table)
+        info_format = "[magenta] v [/ magenta][bold white] > [/bold white] view profiles" \
+                      + "\n" \
+                      + "[magenta] q [/ magenta][bold white] > [/bold white] quit"
+
+        console.print(info_format)
