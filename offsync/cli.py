@@ -28,16 +28,48 @@ def _select_profile(_id=False):
 
 
 def add_profile():
-    site, username, counter, length = input("Site: "), input("Username / E-Mail: "), input("Counter: "), input(
-        "Length: ")
+    site, username, counter, length = input("Site: "), input("Username / E-Mail: "), input("Counter (1): "), input(
+        "Length (16): ")
     if length.strip(" ") == "": length = 16
+    if counter.strip(" ") == "": counter = 1
     create_profile(site, username, counter, length)
+
+
+def add_profiles():
+    while True:
+        add_profile()
+        print("")
+        ask = input("Continue (Y/n): ").lower()
+        print("")
+
+        if not ask == "" or ask == "y":
+            _list_profiles()
+            break
 
 
 def remove_profile():
     _list_profiles()
     _id = _select_profile(_id=True)
     delete_profile(_id)
+    _list_profiles()
+
+
+def remove_profiles():
+    _list_profiles()
+    print("\nEnter S.No. Of All Profiles You Want To Remove Seperated By Coma ','")
+    print("For Example: > 1, 2, 3, 4")
+    print("NOTE: Any Non-Numeric Value Will Terminate The Process")
+
+    ids = []
+
+    try:
+        ids = [i if i.isdigit() else int(i) for i in input("> ").replace(" ", "").split(",")]
+    except ValueError as e:
+        print("\nInvalid Input: ", e)
+        exit(1)
+
+    for _id in ids:
+        delete_profile(_id)
     _list_profiles()
 
 

@@ -7,8 +7,14 @@ if __name__ == "__main__":
     argc = len(args)
 
     if argc != 1 and args[1] == "add":
-        cli.add_profile()
+        if argc > 2 and args[2] == "c":
+            cli.add_profiles()
+        else:
+            cli.add_profile()
     elif argc != 1 and args[1] == "remove":
-        cli.remove_profile()
+        if argc > 2 and args[2] == "c":
+            cli.remove_profiles()
+        else:
+            cli.remove_profile()
     else:
         cli.get_password()

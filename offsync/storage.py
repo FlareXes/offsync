@@ -25,7 +25,10 @@ def save_profile(profile):
 
 def delete_profile(_id):
     profiles = load_profiles()
-    del profiles[_id]
+    try:
+        del profiles[_id]
+    except KeyError:
+        pass
     _dump_profiles(profiles)
 
 
