@@ -1,3 +1,4 @@
+from offsync.clipboard import copy
 from offsync.password import generate_password
 from offsync.profile import create_profile
 from offsync.security import get_master_password
@@ -47,4 +48,5 @@ def get_password():
         profile = _select_profile()
         if profile is None: continue
         passwd = generate_password(profile, mp_hash)
-        print(passwd)
+        copy(passwd)
+        print("Copied To Clipboard")
