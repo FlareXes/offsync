@@ -9,23 +9,22 @@ def unpack_dict(**kwargs):
 class _Table:
     def __init__(self):
         self.table = Table()
-        self.table.add_column("Profiles", justify="center", style="cyan", no_wrap=True, header_style="white")
-        # self.table.add_column("Site", justify="left", style="cyan", no_wrap=True, header_style="white")
-        # self.table.add_column("Username / E-Mail", justify="left", style="cyan", no_wrap=True, header_style="white")
-        # self.table.add_column("Salt", justify="left", style="cyan", no_wrap=True, header_style="white")
-        # self.table.add_column("Length", justify="left", style="cyan", no_wrap=True, header_style="white")
+        self.table.add_column("S.No.", justify="center", style="magenta", header_style="magenta")
+        self.table.add_column("Site", justify="center", style="green", header_style="green")
+        self.table.add_column("Username / E-Mail", justify="center", style="red", header_style="red")
+        self.table.add_column("Length", justify="center", style="green", header_style="green")
+        self.table.add_column("Counter", justify="center", style="magenta", header_style="magenta")
 
     def add_row(self, _id, profile):
-        # self.table.add_row(f"[magenta]{str(i + 1)}[/ magenta] [bold white]>[/bold white] {todo}")
         site, username, counter, length = unpack_dict(**profile)
-        row_format = f"{_id} > {site} > {username} > {counter} > {length}"
-        self.table.add_row(row_format)
+        self.table.add_row(_id, site, username, length, counter)
 
-    def tabulate(self):
+    def tabulate(self, info: bool = True):
         console = Console()
         console.print(self.table)
-        info_format = "[magenta] v [/ magenta][bold white] > [/bold white] view profiles" \
-                      + "\n" \
-                      + "[magenta] q [/ magenta][bold white] > [/bold white] quit"
+        if info:
+            info_format = "[magenta] v [/ magenta][bold white] > [/bold white] view profiles" \
+                          + "\n" \
+                          + "[magenta] q [/ magenta][bold white] > [/bold white] quit"
 
-        console.print(info_format)
+            console.print(info_format)
