@@ -6,10 +6,10 @@ from offsync.storage import load_profiles, delete_profile
 from offsync.ui import _Table
 
 
-def _list_profiles():
+def _list_profiles(info: bool = True):
     table = _Table()
     for _id, profile in load_profiles().items(): table.add_row(_id, profile)
-    table.tabulate()
+    table.tabulate(info)
 
 
 def _select_profile(_id=False):
@@ -30,8 +30,8 @@ def _select_profile(_id=False):
 def add_profile():
     site, username, counter, length = input("Site: "), input("Username / E-Mail: "), input("Counter (1): "), input(
         "Length (16): ")
-    if length.strip(" ") == "": length = 16
-    if counter.strip(" ") == "": counter = 1
+    if length.strip(" ") == "": length = "16"
+    if counter.strip(" ") == "": counter = "1"
     create_profile(site, username, counter, length)
 
 
@@ -51,7 +51,7 @@ def remove_profile():
     _list_profiles()
     _id = _select_profile(_id=True)
     delete_profile(_id)
-    _list_profiles()
+    _list_profiles(info=False)
 
 
 def remove_profiles():
@@ -70,7 +70,7 @@ def remove_profiles():
 
     for _id in ids:
         delete_profile(_id)
-    _list_profiles()
+    _list_profiles(info=False)
 
 
 def get_password():
