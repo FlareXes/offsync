@@ -8,7 +8,14 @@ from offsync.ui import _Table
 
 def _list_profiles(info: bool = True):
     table = _Table()
-    for _id, profile in load_profiles().items(): table.add_row(_id, profile)
+    profiles = load_profiles().items()
+
+    for _id, profile in profiles: table.add_row(_id, profile)
+
+    if len(profiles) == 0:
+        table.tabulate(info=False)
+        exit(0)
+
     table.tabulate(info)
 
 
@@ -28,10 +35,10 @@ def _select_profile(_id=False):
 
 
 def add_profile():
-    site, username, counter, length = input("Site: "), input("Username / E-Mail: "), input("Counter (1): "), input(
-        "Length (16): ")
-    if length.strip(" ") == "": length = "16"
-    if counter.strip(" ") == "": counter = "1"
+    site, username, counter, length = input("Site: "), input("Username / E-Mail: "), \
+                                      input("Counter (1): ").strip(" "), input("Length (16): ").strip(" ")
+    if length == "" or length.isdigit() is False: length = "16"
+    if counter == "" or counter.isdigit() is False: counter = "1"
     create_profile(site, username, counter, length)
 
 
@@ -43,7 +50,7 @@ def add_profiles():
         print("")
 
         if not ask == "" or ask == "y":
-            _list_profiles()
+            _list_profiles(info=False)
             break
 
 
@@ -55,13 +62,12 @@ def remove_profile():
 
 
 def remove_profiles():
-    _list_profiles()
+    _list_profiles(info=False)
     print("\nEnter S.No. Of All Profiles You Want To Remove Seperated By Coma ','")
     print("For Example: > 1, 2, 3, 4")
     print("NOTE: Any Non-Numeric Value Will Terminate The Process")
 
     ids = []
-
     try:
         ids = [i if i.isdigit() else int(i) for i in input("> ").replace(" ", "").split(",")]
     except ValueError as e:
