@@ -1,6 +1,6 @@
 #!/bin/sh
 
-pip install -r rich==12.6.0
+pip install rich
 
 chmod +x ./offsync.sh
 

@@ -5,8 +5,6 @@
 ### What does stateless actually mean?
 `Stateless` simply means that your password is never being stored. You just store some information about your account locally. And, Passwords get generated on the fly depending on the account info you provided and the secret key. There is no master password. Every secret key is master password. Didn't understand, [check out yourself here](https://www.lesspass.com/).
 
-> **Warning**: This project is still under development.
-
 ---
 ## How this works?
 OffSync asks you four simple questions `site`, `username / e-mail`, `length`, `counter`.
