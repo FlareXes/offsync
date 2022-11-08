@@ -37,8 +37,10 @@ def _select_profile(_id=False):
 def add_profile():
     site, username, counter, length = input("Site: "), input("Username / E-Mail: "), \
                                       input("Counter (1): ").strip(" "), input("Length (16): ").strip(" ")
-    if length == "" or length.isdigit() is False: length = "16"
+    if site == "": site = "None"
+    if username == "": counter = "None@None.None"
     if counter == "" or counter.isdigit() is False: counter = "1"
+    if length == "" or length.isdigit() is False: length = "16"
     create_profile(site, username, counter, length)
 
 
@@ -46,10 +48,10 @@ def add_profiles():
     while True:
         add_profile()
         print("")
-        ask = input("Continue (Y/n): ").lower()
+        ask = input("Continue (Y/n): ").lower().strip()
         print("")
 
-        if not ask == "" or ask == "y":
+        if ask == "n" or ask not in ["y", "n", ""]:
             _list_profiles(info=False)
             break
 
@@ -88,3 +90,18 @@ def get_password():
         passwd = generate_password(profile, mp_hash)
         copy(passwd)
         print("Copied To Clipboard")
+
+
+def usage() -> None:
+    print("""
+USAGE: offsync [Options] (add, remove, help)
+
+Optional Arguments:
+    add            add new profile
+    add c          add multiple profiles at once
+     
+    remove         remove new profile
+    remove c       remove multiple profiles at once
+    
+    help           Show this help menu
+    """)
