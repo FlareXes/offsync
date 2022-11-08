@@ -1,6 +1,8 @@
 from rich.console import Console
 from rich.table import Table
 
+MODE = ""
+
 
 def unpack_dict(**kwargs):
     return kwargs.values()
@@ -28,3 +30,12 @@ class _Table:
                           + "[magenta] q [/ magenta][bold white] > [/bold white] quit"
 
             console.print(info_format)
+
+
+def set_mode(status: str):
+    global MODE
+    MODE = status
+
+
+def get_mode() -> str:
+    return MODE

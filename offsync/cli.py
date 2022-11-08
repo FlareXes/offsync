@@ -3,7 +3,7 @@ from offsync.password import generate_password
 from offsync.profile import create_profile
 from offsync.security import get_master_password
 from offsync.storage import load_profiles, delete_profile
-from offsync.ui import _Table
+from offsync.ui import _Table, get_mode
 
 
 def _list_profiles(info: bool = True):
@@ -20,7 +20,7 @@ def _list_profiles(info: bool = True):
 
 
 def _select_profile(_id=False):
-    ask = input("\nq to exit > ")
+    ask = input(f"\n{get_mode()} > ")
     if ask == "v" or ask == "view":
         _list_profiles()
     elif ask == "q" or ask == "quit" or ask == "exit":
@@ -71,7 +71,7 @@ def remove_profiles():
 
     ids = []
     try:
-        ids = [i if i.isdigit() else int(i) for i in input("> ").replace(" ", "").split(",")]
+        ids = [i if i.isdigit() else int(i) for i in input(f"{get_mode()} > ").replace(" ", "").split(",")]
     except ValueError as e:
         print("\nInvalid Input: ", e)
         exit(1)
