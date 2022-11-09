@@ -16,7 +16,10 @@ def _dump_profiles(profiles):
 
 def save_profile(profile):
     profiles = load_profiles()
-    max_id = max(map(int, profiles.keys()))
+    if len(profiles) > 0:
+        max_id = max(map(int, profiles.keys()))
+    else:
+        max_id = 0
     profile[max_id + 1] = profile['1']
     del profile['1']
     profiles.update(profile)
