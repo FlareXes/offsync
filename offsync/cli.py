@@ -1,3 +1,5 @@
+from typing import Dict
+
 from offsync.clipboard import copy
 from offsync.password import generate_password
 from offsync.profile import create_profile
@@ -6,7 +8,7 @@ from offsync.storage import load_profiles, delete_profile
 from offsync.ui import _Table, get_mode
 
 
-def _list_profiles(info: bool = True):
+def _list_profiles(info: bool = True) -> None:
     table = _Table()
     profiles = load_profiles().items()
 
@@ -19,22 +21,24 @@ def _list_profiles(info: bool = True):
     table.tabulate(info)
 
 
-def _select_profile(_id=False):
+def _select_profile(only_id: bool = False) -> Dict[str, str] | str | None:
     ask = input(f"\n{get_mode()} > ")
     if ask == "v" or ask == "view":
         _list_profiles()
+        return None
     elif ask == "q" or ask == "quit" or ask == "exit":
         exit(0)
-    elif _id:
+    elif only_id:
         return ask
     else:
         try:
             return load_profiles()[ask]
         except KeyError as e:
             print("Invalid Input!")
+            return None
 
 
-def add_profile():
+def add_profile() -> None:
     site, username, counter, length = input("Site: "), input("Username / E-Mail: "), \
                                       input("Counter (1): ").strip(" "), input("Length (16): ").strip(" ")
     if site == "": site = "None"
@@ -44,7 +48,7 @@ def add_profile():
     create_profile(site, username, counter, length)
 
 
-def add_profiles():
+def add_profiles() -> None:
     while True:
         add_profile()
         print("")
@@ -56,14 +60,14 @@ def add_profiles():
             break
 
 
-def remove_profile():
+def remove_profile() -> None:
     _list_profiles()
-    _id = _select_profile(_id=True)
+    _id = _select_profile(only_id=True)
     delete_profile(_id)
     _list_profiles(info=False)
 
 
-def remove_profiles():
+def remove_profiles() -> None:
     _list_profiles(info=False)
     print("\nEnter S.No. Of All Profiles You Want To Remove Seperated By Coma ','")
     print("For Example: > 1, 2, 3, 4")
@@ -81,7 +85,7 @@ def remove_profiles():
     _list_profiles(info=False)
 
 
-def get_password():
+def get_password() -> None:
     mp_hash = get_master_password()
     _list_profiles()
     while True:
