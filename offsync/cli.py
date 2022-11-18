@@ -1,10 +1,11 @@
+import sys
 from typing import Dict
 
 from offsync.clipboard import copy
 from offsync.password import generate_password
 from offsync.profile import create_profile
 from offsync.security import get_master_password
-from offsync.storage import load_profiles, delete_profile
+from offsync.storage import load_profiles, delete_profile, update_profile_counter
 from offsync.ui import _Table, get_mode
 
 
@@ -27,13 +28,13 @@ def _select_profile(only_id: bool = False) -> Dict[str, str] | str | None:
         _list_profiles()
         return None
     elif ask == "q" or ask == "quit" or ask == "exit":
-        exit(0)
+        sys.exit(0)
     elif only_id:
         return ask
     else:
         try:
             return load_profiles()[ask]
-        except KeyError as e:
+        except KeyError:
             print("Invalid Input!")
             return None
 
@@ -96,6 +97,15 @@ def get_password() -> None:
         print("Copied To Clipboard")
 
 
+def update_password() -> None:
+    _list_profiles()
+    _id = _select_profile(only_id=True)
+    counter = input("Counter: ")
+    if counter == "" or counter.isdigit() is False: counter = "1"
+    update_profile_counter(_id, counter)
+    _list_profiles(info=False)
+
+
 def usage() -> None:
     print("""
 USAGE: offsync [Options] (add, remove, help)
@@ -106,6 +116,8 @@ Optional Arguments:
      
     remove         remove new profile
     remove c       remove multiple profiles at once
+   
+    update         change profile counter to update password
     
     help           Show this help menu
     """)

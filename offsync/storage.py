@@ -37,6 +37,15 @@ def delete_profile(_id: str) -> None:
     _dump_profiles(profiles)
 
 
+def update_profile_counter(_id: str, counter: str) -> None:
+    profiles = load_profiles()
+    try:
+        profiles[_id]["counter"] = counter
+    except KeyError:
+        pass
+    _dump_profiles(profiles)
+
+
 if not os.path.exists(DATABASE):
     with open(DATABASE, "w") as file:
         json.dump({}, file)
