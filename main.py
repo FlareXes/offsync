@@ -34,10 +34,16 @@ if __name__ == "__main__":
 
     elif argc != 1 and args[1] == "update":
         set_mode("Update Mode")
-        cli.update_password()
+        if continuous:
+            cli.usage()
+            print(">>> Unsupported Argument `c` <<<")
+            sys.exit(2)
+        else:
+            cli.update_password()
 
     elif argc != 1 and args[1] == "help":
         cli.usage()
+
     else:
         set_mode("View Mode")
         cli.get_password()

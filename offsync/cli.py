@@ -6,37 +6,40 @@ from offsync.password import generate_password
 from offsync.profile import create_profile
 from offsync.security import get_master_password
 from offsync.storage import load_profiles, delete_profile, update_profile_counter
-from offsync.ui import _Table, get_mode
+from offsync.ui import _Table, get_mode, set_table_prompts
 
 
-def _list_profiles(info: bool = True) -> None:
+def _list_profiles() -> None:
     table = _Table()
     profiles = load_profiles().items()
 
     for _id, profile in profiles: table.add_row(_id, profile)
 
     if len(profiles) == 0:
-        table.tabulate(info=False)
-        exit(0)
+        table.tabulate()
+        sys.exit(0)
 
-    table.tabulate(info)
+    table.tabulate()
 
 
 def _select_profile(only_id: bool = False) -> Dict[str, str] | str | None:
     ask = input(f"\n{get_mode()} > ")
+
+    if ask == "q" or ask == "quit" or ask == "exit":
+        sys.exit(0)
+
+    if only_id:
+        return ask
+
     if ask == "v" or ask == "view":
         _list_profiles()
         return None
-    elif ask == "q" or ask == "quit" or ask == "exit":
-        sys.exit(0)
-    elif only_id:
-        return ask
-    else:
-        try:
-            return load_profiles()[ask]
-        except KeyError:
-            print("Invalid Input!")
-            return None
+
+    try:
+        return load_profiles()[ask]
+    except KeyError:
+        print("Invalid Input!")
+        return None
 
 
 def add_profile() -> None:
@@ -50,6 +53,7 @@ def add_profile() -> None:
 
 
 def add_profiles() -> None:
+    set_table_prompts(v=False, q=False)
     while True:
         add_profile()
         print("")
@@ -57,19 +61,22 @@ def add_profiles() -> None:
         print("")
 
         if ask == "n" or ask not in ["y", "n", ""]:
-            _list_profiles(info=False)
+            _list_profiles()
             break
 
 
 def remove_profile() -> None:
+    set_table_prompts(q=True)
     _list_profiles()
     _id = _select_profile(only_id=True)
     delete_profile(_id)
-    _list_profiles(info=False)
+    set_table_prompts(v=False, q=False)
+    _list_profiles()
 
 
 def remove_profiles() -> None:
-    _list_profiles(info=False)
+    set_table_prompts(v=False, q=False)
+    _list_profiles()
     print("\nEnter S.No. Of All Profiles You Want To Remove Seperated By Coma ','")
     print("For Example: > 1, 2, 3, 4")
     print("NOTE: Any Non-Numeric Value Will Terminate The Process")
@@ -83,10 +90,11 @@ def remove_profiles() -> None:
 
     for _id in ids:
         delete_profile(_id)
-    _list_profiles(info=False)
+    _list_profiles()
 
 
 def get_password() -> None:
+    set_table_prompts(v=True, q=True)
     mp_hash = get_master_password()
     _list_profiles()
     while True:
@@ -98,12 +106,16 @@ def get_password() -> None:
 
 
 def update_password() -> None:
+    set_table_prompts(q=True)
     _list_profiles()
     _id = _select_profile(only_id=True)
+    if _id == "" or _id.isdigit() is False: sys.exit(2)
     counter = input("Counter: ")
     if counter == "" or counter.isdigit() is False: counter = "1"
+
     update_profile_counter(_id, counter)
-    _list_profiles(info=False)
+    set_table_prompts(v=False, q=False)
+    _list_profiles()
 
 
 def usage() -> None:
