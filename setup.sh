@@ -12,6 +12,6 @@ sudo cp ./offsync.sh /usr/local/bin/offsync
 
 sudo chown -R "$(whoami):$(whoami)" /opt/offsync/
 
-printf "\n\nNOW YOU CAN DELETE THIS REPO\n"
+printf "\nNOW YOU CAN DELETE THIS REPO\n\n"
 
 exit 0
