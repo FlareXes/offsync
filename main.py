@@ -2,6 +2,7 @@ import sys
 
 from offsync import cli
 from offsync.ui import set_mode
+from offsync.clipboard import copy
 
 if __name__ == "__main__":
     args = sys.argv
@@ -47,3 +48,5 @@ if __name__ == "__main__":
     else:
         set_mode("View Mode")
         cli.get_password()
+
+    copy("")

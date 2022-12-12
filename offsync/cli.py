@@ -26,6 +26,7 @@ def _select_profile(only_id: bool = False) -> Dict[str, str] | str | None:
     ask = input(f"\n{get_mode()} > ")
 
     if ask == "q" or ask == "quit" or ask == "exit":
+        copy("")
         sys.exit(0)
 
     if only_id:
@@ -77,7 +78,7 @@ def remove_profile() -> None:
 def remove_profiles() -> None:
     set_table_prompts(v=False, q=False)
     _list_profiles()
-    print("\nEnter S.No. Of All Profiles You Want To Remove Seperated By Coma ','")
+    print("\nEnter S.No. Of All Profiles You Want To Remove Separated By Coma ','")
     print("For Example: > 1, 2, 3, 4")
     print("NOTE: Any Non-Numeric Value Will Terminate The Process")
 
