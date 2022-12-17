@@ -45,7 +45,7 @@ def _select_profile(only_id: bool = False) -> Dict[str, str] | str | None:
 
 def add_profile() -> None:
     site, username, counter, length = input("Site: "), input("Username / E-Mail: "), \
-                                      input("Counter (1): ").strip(" "), input("Length (16): ").strip(" ")
+        input("Counter (1): ").strip(" "), input("Length (16): ").strip(" ")
     if site == "": site = "None"
     if username == "": counter = "None@None.None"
     if counter == "" or counter.isdigit() is False: counter = "1"
@@ -111,10 +111,18 @@ def update_password() -> None:
     _list_profiles()
     _id = _select_profile(only_id=True)
     if _id == "" or _id.isdigit() is False: sys.exit(2)
-    counter = input("Counter: ")
-    if counter == "" or counter.isdigit() is False: counter = "1"
+    print("Leave empty if you don't want to change something")
 
-    update_profile_counter(_id, counter)
+    site = input("Site: ").strip()
+    username = input("E-Mail / Username: ").strip()
+    counter = input("Counter: ").strip()
+    length = input("Length: ").strip()
+
+    if (counter != "" and counter.isdigit() is False) or (length != "" and length.isdigit() is False):
+        print("Error: Invalid Input!")
+        sys.exit(2)
+
+    update_profile_counter(_id, site, username, counter, length)
     set_table_prompts(v=False, q=False)
     _list_profiles()
 
