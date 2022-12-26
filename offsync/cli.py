@@ -94,7 +94,7 @@ def remove_profiles() -> None:
     _list_profiles()
 
 
-def get_password() -> None:
+def get_password(prompt: bool = False) -> None:
     set_table_prompts(v=True, q=True)
     mp_hash = get_master_password()
     _list_profiles()
@@ -103,6 +103,8 @@ def get_password() -> None:
         if profile is None: continue
         passwd = generate_password(profile, mp_hash)
         copy(passwd)
+        if prompt:
+            print(passwd)
         print("Copied To Clipboard")
 
 
@@ -139,6 +141,6 @@ Optional Arguments:
     remove c       remove multiple profiles at once
    
     update         change profile counter to update password
-    
+    prompt         show password in clear text
     help           Show this help menu
     """)

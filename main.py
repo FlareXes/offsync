@@ -1,15 +1,15 @@
 import sys
 
 from offsync import cli
-from offsync.ui import set_mode
 from offsync.clipboard import copy
+from offsync.ui import set_mode
 
 if __name__ == "__main__":
     args = sys.argv
     argc = len(args)
     continuous = argc == 3 and args[2] == "c"
 
-    if argc > 1 and args[1] not in ["add", "remove", "update"] or argc == 3 and args[2] != "c":
+    if argc > 1 and args[1] not in ["add", "remove", "update", "prompt", "help"] or argc == 3 and args[2] != "c":
         cli.usage()
         print(">>> Invalid Option! <<<")
         sys.exit(2)
@@ -47,6 +47,9 @@ if __name__ == "__main__":
 
     else:
         set_mode("View Mode")
-        cli.get_password()
+        if argc == 2 and args[1] == "prompt":
+            cli.get_password(prompt=True)
+        else:
+            cli.get_password()
 
     copy("")
