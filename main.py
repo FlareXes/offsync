@@ -40,7 +40,7 @@ if __name__ == "__main__":
             print(">>> Unsupported Argument `c` <<<")
             sys.exit(2)
         else:
-            cli.update_password()
+            cli.change_password()
 
     elif argc != 1 and args[1] == "help":
         cli.usage()

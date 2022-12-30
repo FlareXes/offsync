@@ -1,6 +1,7 @@
 from typing import Any, Dict
 
 from rich.console import Console
+from rich.prompt import IntPrompt, Prompt
 from rich.table import Table
 
 MODE = ""
@@ -30,6 +31,33 @@ class _Table:
         console.print(self.table)
         info = get_table_prompt()
         if info is not None: console.print(info)
+
+
+class Input:
+    def __init__(self, text: str = None, default: str | int = None, show_default: bool = True):
+        self.text = text
+        self.default = default
+        self.show_default = show_default
+
+    @property
+    def integer(self):
+        return IntPrompt.ask(f"[cyan]{self.text}[/cyan]", default=self.default, show_default=self.show_default)
+
+    @property
+    def string(self):
+        return Prompt.ask(f"[cyan]{self.text}[/cyan]", default=self.default, show_default=self.show_default)
+
+    @property
+    def selection(self):
+        mode = get_mode()
+        if mode == "View Mode":
+            return Prompt.ask(f"\n[green]{mode}[/green]").strip()
+
+        elif mode == "Update Mode":
+            return Prompt.ask(f"\n[yellow]{mode}[/yellow]").strip()
+
+        else:
+            return Prompt.ask(f"\n[red]{mode}[/red]").strip()
 
 
 def set_mode(status: str) -> None:

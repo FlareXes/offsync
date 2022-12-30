@@ -5,8 +5,8 @@ from offsync.clipboard import copy
 from offsync.password import generate_password
 from offsync.profile import create_profile
 from offsync.security import get_master_password
-from offsync.storage import load_profiles, delete_profile, update_profile_counter
-from offsync.ui import _Table, get_mode, set_table_prompts
+from offsync.storage import load_profiles, delete_profile, update_profile
+from offsync.ui import _Table, set_table_prompts, Input
 
 
 def _list_profiles() -> None:
@@ -23,7 +23,7 @@ def _list_profiles() -> None:
 
 
 def _select_profile(only_id: bool = False) -> Dict[str, str] | str | None:
-    ask = input(f"\n{get_mode()} > ")
+    ask = Input().selection
 
     if ask == "q" or ask == "quit" or ask == "exit":
         copy("")
@@ -44,12 +44,11 @@ def _select_profile(only_id: bool = False) -> Dict[str, str] | str | None:
 
 
 def add_profile() -> None:
-    site, username, counter, length = input("Site: "), input("Username / E-Mail: "), \
-        input("Counter (1): ").strip(" "), input("Length (16): ").strip(" ")
-    if site == "": site = "None"
-    if username == "": counter = "None@None.None"
-    if counter == "" or counter.isdigit() is False: counter = "1"
-    if length == "" or length.isdigit() is False: length = "16"
+    site = Input("Site", default="None").string
+    username = Input("Username / E-Mail", default="None").string
+    counter = str(Input("Counter", default=1).integer)
+    length = str(Input("Length", default=16).integer)
+
     create_profile(site, username, counter, length)
 
 
@@ -84,7 +83,7 @@ def remove_profiles() -> None:
 
     ids = []
     try:
-        ids = [i if i.isdigit() else int(i) for i in input(f"{get_mode()} > ").replace(" ", "").split(",")]
+        ids = [i if i.isdigit() else int(i) for i in Input("").string.replace(" ", "").split(",")]
     except ValueError as e:
         print("\nInvalid Input: ", e)
         exit(1)
@@ -103,28 +102,28 @@ def get_password(prompt: bool = False) -> None:
         if profile is None: continue
         passwd = generate_password(profile, mp_hash)
         copy(passwd)
-        if prompt:
-            print(passwd)
+        if prompt: print(passwd)
         print("Copied To Clipboard")
 
 
-def update_password() -> None:
+def change_password() -> None:
     set_table_prompts(q=True)
     _list_profiles()
     _id = _select_profile(only_id=True)
     if _id == "" or _id.isdigit() is False: sys.exit(2)
-    print("Leave empty if you don't want to change something")
+    print("Leave field empty if you don't want to change something")
 
-    site = input("Site: ").strip()
-    username = input("E-Mail / Username: ").strip()
-    counter = input("Counter: ").strip()
-    length = input("Length: ").strip()
+    site = Input("Site").string
+    username = Input("Username / E-Mail").string
+    counter = Input("Counter").integer
+    length = Input("Length").integer
 
-    if (counter != "" and counter.isdigit() is False) or (length != "" and length.isdigit() is False):
-        print("Error: Invalid Input!")
-        sys.exit(2)
+    if counter is not None:
+        counter = str(counter)
+    if length is not None:
+        length = str(length)
 
-    update_profile_counter(_id, site, username, counter, length)
+    update_profile(_id, site, username, counter, length)
     set_table_prompts(v=False, q=False)
     _list_profiles()
 

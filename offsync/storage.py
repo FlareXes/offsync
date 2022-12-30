@@ -37,19 +37,19 @@ def delete_profile(_id: str) -> None:
     _dump_profiles(profiles)
 
 
-def update_profile_counter(_id: str, site:str, username: str, counter: str, length:str) -> None:
+def update_profile(_id: str, site: str, username: str, counter: str, length: str) -> None:
     profiles = load_profiles()
     try:
-        if site != "":
+        if site is not None:
             profiles[_id]["site"] = site
 
-        if username != "":
+        if username is not None:
             profiles[_id]["username"] = username
 
-        if counter != "":
+        if counter is not None:
             profiles[_id]["counter"] = counter
 
-        if length != "":
+        if length is not None:
             profiles[_id]["length"] = length
     except KeyError:
         pass
