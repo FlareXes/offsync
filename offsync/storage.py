@@ -10,7 +10,7 @@ def load_profiles() -> Dict[str, Dict[str, str]]:
         return json.load(f)
 
 
-def _dump_profiles(profiles: Dict[str, Dict[str, str]]) -> None:
+def dump_profiles(profiles: Dict[str, Dict[str, str]]) -> None:
     with open(DATABASE, "w") as f:
         json.dump(profiles, f, indent=4)
 
@@ -25,7 +25,7 @@ def save_profile(profile: Dict[str, Dict[str, str]]) -> None:
     profile[str(max_id + 1)] = profile['1']
     if len(profile) > 1: del profile['1']
     profiles.update(profile)
-    _dump_profiles(profiles)
+    dump_profiles(profiles)
 
 
 def delete_profile(_id: str) -> None:
@@ -34,7 +34,7 @@ def delete_profile(_id: str) -> None:
         del profiles[_id]
     except KeyError:
         pass
-    _dump_profiles(profiles)
+    dump_profiles(profiles)
 
 
 def update_profile(_id: str, site: str, username: str, counter: str, length: str) -> None:
@@ -53,7 +53,7 @@ def update_profile(_id: str, site: str, username: str, counter: str, length: str
             profiles[_id]["length"] = length
     except KeyError:
         pass
-    _dump_profiles(profiles)
+    dump_profiles(profiles)
 
 
 if not os.path.exists(DATABASE):

@@ -16,11 +16,11 @@ def unpack_dict(**kwargs: Dict[str, str]) -> Any:
 class _Table:
     def __init__(self) -> None:
         self.table = Table()
-        self.table.add_column("S.No.", justify="center", style="magenta", header_style="magenta")
-        self.table.add_column("Site", justify="center", style="green", header_style="green")
-        self.table.add_column("Username / E-Mail", justify="center", style="red", header_style="red")
-        self.table.add_column("Length", justify="center", style="green", header_style="green")
-        self.table.add_column("Counter", justify="center", style="magenta", header_style="magenta")
+        self.table.add_column("S.No.", justify="center", style="bold magenta", header_style="magenta")
+        self.table.add_column("Site", justify="center", style="bold green", header_style="green")
+        self.table.add_column("Username / E-Mail", justify="center", style="bold red", header_style="red")
+        self.table.add_column("Length", justify="center", style="bold green", header_style="green")
+        self.table.add_column("Counter", justify="center", style="bold magenta", header_style="magenta")
 
     def add_row(self, _id: str, profile: Dict[str, str]) -> None:
         site, username, counter, length = unpack_dict(**profile)
@@ -41,23 +41,52 @@ class Input:
 
     @property
     def integer(self):
-        return IntPrompt.ask(f"[cyan]{self.text}[/cyan]", default=self.default, show_default=self.show_default)
+        return IntPrompt.ask(f"[bold cyan]{self.text}[/bold cyan]", default=self.default,
+                             show_default=self.show_default)
 
     @property
     def string(self):
-        return Prompt.ask(f"[cyan]{self.text}[/cyan]", default=self.default, show_default=self.show_default)
+        return Prompt.ask(f"[bold cyan]{self.text}[/bold cyan]", default=self.default, show_default=self.show_default)
 
     @property
     def selection(self):
         mode = get_mode()
         if mode == "View Mode":
-            return Prompt.ask(f"\n[green]{mode}[/green]").strip()
+            return Prompt.ask(f"\n[bold green]{mode}[/bold green]").strip()
 
         elif mode == "Update Mode":
-            return Prompt.ask(f"\n[yellow]{mode}[/yellow]").strip()
+            return Prompt.ask(f"\n[bold yellow]{mode}[/bold yellow]").strip()
 
         else:
-            return Prompt.ask(f"\n[red]{mode}[/red]").strip()
+            return Prompt.ask(f"\n[bold red]{mode}[/bold red]").strip()
+
+    @staticmethod
+    def getpass(prompt: str) -> str:
+        ans = Prompt.ask(f"[bold medium_spring_green]{prompt}[/bold medium_spring_green]", password=True,
+                         default="", show_default=False)
+        return ans
+
+
+class Print:
+    @staticmethod
+    def success(text):
+        console = Console()
+        console.print(f"[bold green]{text}[/bold green]")
+
+    @staticmethod
+    def warning(text):
+        console = Console()
+        console.print(f"[bold yellow]{text}[/bold yellow]")
+
+    @staticmethod
+    def fail(text):
+        console = Console()
+        console.print(f"[bold red]{text}[/bold red]")
+
+    @staticmethod
+    def info(text):
+        console = Console()
+        console.print(f"[bold cyan]{text}[/bold cyan]")
 
 
 def set_mode(status: str) -> None:
@@ -78,8 +107,8 @@ def set_table_prompts(v: bool = False, q: bool = False):
 
 
 def get_table_prompt() -> str | None:
-    view_format = "[magenta] v [/ magenta][bold white] > [/bold white] view profiles"
-    quit_format = "[magenta] q [/ magenta][bold white] > [/bold white] quit"
+    view_format = "[bold magenta] v [/bold magenta][bold white] > [/bold white] [bold]view profiles[/bold]"
+    quit_format = "[bold magenta] q [/bold magenta][bold white] > [/bold white] [bold]quit[/bold]"
 
     if TABLE_VIEW_PROMPT and TABLE_QUIT_PROMPT:
         return view_format + "\n" + quit_format

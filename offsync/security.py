@@ -1,5 +1,6 @@
 import hashlib
-from getpass import getpass
+
+from offsync.ui import Input
 
 COST_FACTOR = 2 ** 14
 ROUND = 8
@@ -14,4 +15,4 @@ def kdf_scrypt(password: str, salt: str) -> bytes:
 
 
 def get_master_password() -> str:
-    return hashlib.sha512(getpass("Secret Key: ").encode("utf-8")).hexdigest()
+    return hashlib.sha512(Input.getpass("Secret Key").encode("utf-8")).hexdigest()
