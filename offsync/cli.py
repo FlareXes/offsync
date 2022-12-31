@@ -56,9 +56,8 @@ def add_profiles() -> None:
     set_table_prompts(v=False, q=False)
     while True:
         add_profile()
-        print("")  # TODO: CHeck It
-        ask = input("Continue (Y/n): ").lower().strip()
-        print("")
+        ask = Input("\nContinue (Y/n)", default="y", show_default=False).string.lower().strip()
+        print()
 
         if ask == "n" or ask not in ["y", "n", ""]:
             list_profiles()
@@ -129,17 +128,35 @@ def change_password() -> None:
 
 
 def usage() -> None:
-    print("""
-USAGE: offsync [Options] (add, remove, help)
+    #     Print("""
+    # USAGE: offsync [Options] (add, remove, help)
+    #
+    # Optional Arguments:
+    #     add            add new profile
+    #     add c          add multiple profiles at once
+    #
+    #     remove         remove new profile
+    #     remove c       remove multiple profiles at once
+    #
+    #     update         change profile counter to update password
+    #     prompt         show password in clear text
+    #     help           Show this help menu
+    #     """)
+    Print.info("""
+USAGE: offsync [Option] (add, remove, update, prompt, help)
 
-Optional Arguments:
+Arguments:""")
+
+    Print.success("""
     add            add new profile
-    add c          add multiple profiles at once
-     
+    add c          add multiple profiles at once""")
+
+    Print.fail("""
     remove         remove new profile
-    remove c       remove multiple profiles at once
-   
+    remove c       remove multiple profiles at once""")
+
+    Print.warning("""
     update         change profile counter to update password
     prompt         show password in clear text
     help           Show this help menu
-    """)
+""")

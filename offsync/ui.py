@@ -68,6 +68,10 @@ class Input:
 
 
 class Print:
+    def __init__(self, text: str = None):
+        console = Console()
+        console.print(f"[bold]{text}[/bold]")
+
     @staticmethod
     def success(text):
         console = Console()
