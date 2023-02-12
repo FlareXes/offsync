@@ -6,11 +6,13 @@ from offsync.password import generate_password
 from offsync.profile import create_profile
 from offsync.security import get_master_password
 from offsync.storage import load_profiles, delete_profile, update_profile
-from offsync.ui import _Table, set_table_prompts, Input, Print
+from offsync.ui import _Table, Input, Print
+
+PROMPT_PASSWORD = False
 
 
-def list_profiles() -> None:
-    table = _Table()
+def list_profiles(*, vp, qp, pp) -> None:
+    table = _Table(vp=vp, qp=qp, pp=pp)
     profiles = load_profiles().items()
 
     for _id, profile in profiles: table.add_row(_id, profile)
@@ -33,7 +35,12 @@ def select_profile(only_id: bool = False) -> Dict[str, str] | str | None:
         return ask
 
     if ask == "v" or ask == "view":
-        list_profiles()
+        list_profiles(vp=True, qp=True, pp=True)
+        return None
+
+    if ask == "p" or ask == "prompt":
+        global PROMPT_PASSWORD
+        PROMPT_PASSWORD = not PROMPT_PASSWORD
         return None
 
     try:
@@ -53,29 +60,25 @@ def add_profile() -> None:
 
 
 def add_profiles() -> None:
-    set_table_prompts(v=False, q=False)
     while True:
         add_profile()
         ask = Input("\nContinue (Y/n)", default="y", show_default=False).string.lower().strip()
         print()
 
         if ask == "n" or ask not in ["y", "n", ""]:
-            list_profiles()
+            list_profiles(vp=False, qp=False, pp=False)
             break
 
 
 def remove_profile() -> None:
-    set_table_prompts(q=True)
-    list_profiles()
+    list_profiles(vp=True, qp=False, pp=False)
     _id = select_profile(only_id=True)
     delete_profile(_id)
-    set_table_prompts(v=False, q=False)
-    list_profiles()
+    list_profiles(vp=False, qp=False, pp=False)
 
 
 def remove_profiles() -> None:
-    set_table_prompts(v=False, q=False)
-    list_profiles()
+    list_profiles(vp=False, qp=False, pp=False)
     Print.warning("\nEnter S.No. Of All Profiles You Want To Remove Separated By Coma ','")
     Print.warning("For Example: > 1, 2, 3, 4")
     Print.fail("Note: Any Non-Numeric Value Will Terminate The Process")
@@ -89,25 +92,26 @@ def remove_profiles() -> None:
 
     for _id in ids:
         delete_profile(_id)
-    list_profiles()
+    list_profiles(vp=False, qp=False, pp=False)
 
 
 def get_password(prompt: bool = False) -> None:
-    set_table_prompts(v=True, q=True)
+    global PROMPT_PASSWORD
+    PROMPT_PASSWORD = prompt
     mp_hash = get_master_password()
-    list_profiles()
+    list_profiles(vp=True, qp=True, pp=True)
+
     while True:
         profile = select_profile()
         if profile is None: continue
         passwd = generate_password(profile, mp_hash)
         copy(passwd)
-        if prompt: print(passwd)
+        if PROMPT_PASSWORD: print(passwd)
         Print.info("Copied To Clipboard")
 
 
 def change_password() -> None:
-    set_table_prompts(q=True)
-    list_profiles()
+    list_profiles(vp=False, qp=True, pp=False)
     _id = select_profile(only_id=True)
     if _id == "" or _id.isdigit() is False: sys.exit(2)
     Print.warning("> Leave field empty if you don't want to change something\n")
@@ -123,8 +127,7 @@ def change_password() -> None:
         length = str(length)
 
     update_profile(_id, site, username, counter, length)
-    set_table_prompts(v=False, q=False)
-    list_profiles()
+    list_profiles(vp=False, qp=False, pp=False)
 
 
 def usage() -> None:
