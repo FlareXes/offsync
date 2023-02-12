@@ -1,7 +1,7 @@
 import sys
 
 from offsync import cli
-from offsync.clipboard import copy
+from pyperclip import copy
 from offsync.ui import set_mode
 
 if __name__ == "__main__":

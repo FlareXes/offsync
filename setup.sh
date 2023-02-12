@@ -22,7 +22,7 @@ function log_echo() {
 
 
 # Install the rich library
-if ! pip install rich; then
+if ! pip install -r ./requirements.txt; then
   log_echo "Error: Failed to install the rich library" "red"
 fi
 

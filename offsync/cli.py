@@ -1,7 +1,7 @@
 import sys
 from typing import Dict
 
-from offsync.clipboard import copy
+from pyperclip import copy
 from offsync.password import generate_password
 from offsync.profile import create_profile
 from offsync.security import get_master_password
@@ -128,20 +128,6 @@ def change_password() -> None:
 
 
 def usage() -> None:
-    #     Print("""
-    # USAGE: offsync [Options] (add, remove, help)
-    #
-    # Optional Arguments:
-    #     add            add new profile
-    #     add c          add multiple profiles at once
-    #
-    #     remove         remove new profile
-    #     remove c       remove multiple profiles at once
-    #
-    #     update         change profile counter to update password
-    #     prompt         show password in clear text
-    #     help           Show this help menu
-    #     """)
     Print.info("""
 USAGE: offsync [Option] (add, remove, update, prompt, help)
 
