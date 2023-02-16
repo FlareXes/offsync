@@ -136,12 +136,18 @@ def pwned_profiles():
     table = _Table(vp=False, qp=False, pp=False)
     profiles = load_profiles().items()
     mp_hash = get_master_password()
+
+    Print.warning("\nChecking For Breached Generated Profile Passwords...")
     pwned_id = HaveIBeenPwned(mp_hash).is_pwned()
 
-    for _id, profile in profiles:
-        if _id in pwned_id:
-            table.add_row(_id, profile)
-    table.tabulate()
+    if len(pwned_id):
+        for _id, profile in profiles:
+            if _id in pwned_id:
+                table.add_row(_id, profile)
+        table.tabulate()
+        Print.fail("Critical: These Profile's Password Have Been Breached. Update Them Now And Check Again")
+    else:
+        Print.info("Safe: Password wasn't found in any data breach")
 
 
 def usage() -> None:
