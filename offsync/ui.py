@@ -46,7 +46,7 @@ class _Table:
         console = Console()
         console.print(self.table)
         prompts = self.prompts()
-        console.print(prompts)
+        if prompts: console.print(prompts)
 
 
 class Input:

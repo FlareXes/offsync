@@ -2,6 +2,8 @@ import sys
 from typing import Dict
 
 from pyperclip import copy
+
+from offsync.api import HaveIBeenPwned
 from offsync.password import generate_password
 from offsync.profile import create_profile
 from offsync.security import get_master_password
@@ -130,6 +132,18 @@ def change_password() -> None:
     list_profiles(vp=False, qp=False, pp=False)
 
 
+def pwned_profiles():
+    table = _Table(vp=False, qp=False, pp=False)
+    profiles = load_profiles().items()
+    mp_hash = get_master_password()
+    pwned_id = HaveIBeenPwned(mp_hash).is_pwned()
+
+    for _id, profile in profiles:
+        if _id in pwned_id:
+            table.add_row(_id, profile)
+    table.tabulate()
+
+
 def usage() -> None:
     Print.info("""
 USAGE: offsync [Option] (add, remove, update, prompt, help)
@@ -146,6 +160,7 @@ Arguments:""")
 
     Print.warning("""
     update         change profile counter to update password
+    pwned          check if generated passwords have been breached
     prompt         show password in clear text
     help           Show this help menu
 """)
