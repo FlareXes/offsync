@@ -38,9 +38,21 @@ if ! [ -d /opt/offsync/ ]; then
   fi
 fi
 
+# Create the /usr/share/licenses/offsync/ directory if it does not exist
+if ! [ -d /usr/share/licenses/offsync/ ]; then
+  if ! sudo mkdir -p /usr/share/licenses/offsync/; then
+    log_echo "Error: Failed to create the /usr/share/licenses/offsync/ directory" "red"
+  fi
+fi
+
 # Copy the necessary files and directories to /opt/offsync/
 if ! sudo cp -r ./offsync ./main.py ./LICENSE ./README.md /opt/offsync/; then
   log_echo "Error: Failed to copy files to /opt/offsync/" "red"
+fi
+
+# Copy the LICENSE to /usr/share/licenses/offsync/
+if ! sudo cp ./LICENSE /usr/share/licenses/offsync/; then
+  log_echo "Error: Failed to copy LICENSE to /usr/share/licenses/offsync/" "red"
 fi
 
 # Copy the offsync.sh script to /usr/local/bin/offsync
