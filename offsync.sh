@@ -12,4 +12,4 @@ if ! [ -f /opt/offsync/main.py ]; then
   exit 1
 fi
 
-python3 /opt/offsync/main.py "$@"
+/opt/offsync/venv/bin/python3 /opt/offsync/main.py "$@"

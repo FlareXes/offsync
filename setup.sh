@@ -20,12 +20,6 @@ function log_echo() {
   fi
 }
 
-
-# Install the rich library
-if ! pip install -r ./requirements.txt; then
-  log_echo "Error: Failed to install the rich library" "red"
-fi
-
 # Make the offsync.sh script executable
 if ! chmod +x ./offsync.sh; then
   log_echo "Error: Failed to make the offsync.sh executable" "red"
@@ -46,7 +40,7 @@ if ! [ -d /usr/share/licenses/offsync/ ]; then
 fi
 
 # Copy the necessary files and directories to /opt/offsync/
-if ! sudo cp -r ./offsync ./main.py ./LICENSE ./README.md /opt/offsync/; then
+if ! sudo cp -r ./offsync ./main.py ./LICENSE ./README.md ./requirements.txt /opt/offsync/; then
   log_echo "Error: Failed to copy files to /opt/offsync/" "red"
 fi
 
@@ -58,6 +52,16 @@ fi
 # Copy the offsync.sh script to /usr/local/bin/offsync
 if ! sudo cp ./offsync.sh /usr/local/bin/offsync; then
   log_echo "Error: Failed to copy the offsync.sh script to /usr/local/bin/offsync" "red"
+fi
+
+# Create python virtual environment to install dependencies
+if ! python3 -m venv /opt/offsync/venv; then
+  log_echo "Error: Failed to create virtual environment of /opt/offsync/" "red"
+fi
+
+# Install dependencies
+if ! /opt/offsync/venv/bin/python3 -m pip install -r /opt/offsync/requirements.txt; then
+  log_echo "Error: Failed to install the dependencies" "red"
 fi
 
 # Make the /opt/offsync/ directory owned by the current user
