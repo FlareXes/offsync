@@ -1,5 +1,7 @@
 # OffSync
 
+> Warning : There will be big changes released for OffSync. We're shifting to Sqlite3 from JSON as our database. This will make the codebase more readable and manageable. But this up-coming release won't be backward compatible with the JSON version, so you have to manually import them again.
+
 **OffSync** is a simple open-source stateless password manager inspired by LessPass. The significant difference is that it allows users to store profiles (site, username, password length, etc.) locally without creating an account. So, no bloated web and online accounts.
 
 ### What does stateless actually mean?
