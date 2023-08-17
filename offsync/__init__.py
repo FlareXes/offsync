@@ -10,6 +10,5 @@ elif system() == "Darwin":
 else:
     DATABASE_DIR = os.path.join(USER_HOME_DIR, ".local", "share", "offsync")
 
-DATABASE = os.path.join(DATABASE_DIR, "profiles.json")
-
 os.makedirs(DATABASE_DIR, exist_ok=True)
+DATABASE = os.path.join(DATABASE_DIR, "profiles.sqlite3")

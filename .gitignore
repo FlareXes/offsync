@@ -1,5 +1,12 @@
+# Dot files and directories to ignore
+.mypy_cache
+.idea
+
+# Directories to ignore
 venv
 __pycache__
-.idea
+
+# Files to ignore
 profiles.json
 test.py
+TODO

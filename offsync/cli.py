@@ -1,53 +1,69 @@
-import sys
-from typing import Dict
-
 from pyperclip import copy
 
 from offsync.api import HaveIBeenPwned
-from offsync.password import generate_password
-from offsync.profile import create_profile
-from offsync.security import get_master_password
-from offsync.storage import load_profiles, delete_profile, update_profile
+from offsync.security import get_master_password, generate_profile_password
+from offsync.storage import profiles, create_profile, delete_profile, update_profile
+from offsync.template import Profile
 from offsync.ui import _Table, Input, Print
 
 PROMPT_PASSWORD = False
 
 
+def usage() -> None:
+    Print.info("""
+USAGE: offsync [Option] (add, remove, update, prompt, pwned, help)
+
+Arguments:""")
+
+    Print.success("""
+    add            add new profile
+    add c          add multiple profiles at once""")
+
+    Print.fail("""
+    remove         remove new profile
+    remove c       remove multiple profiles at once""")
+
+    Print.warning("""
+    update         change profile counter to update password
+    pwned          check if generated passwords have been breached
+    prompt         show password in clear text
+    help           Show this help menu
+""")
+
+
 def list_profiles(*, vp, qp, pp) -> None:
     table = _Table(vp=vp, qp=qp, pp=pp)
-    profiles = load_profiles().items()
 
-    for _id, profile in profiles: table.add_row(_id, profile)
-
-    if len(profiles) == 0:
-        table.tabulate()
-        sys.exit(0)
+    for profile in profiles():
+        table.add_row(profile.__dict__)
 
     table.tabulate()
 
 
-def select_profile(only_id: bool = False) -> Dict[str, str] | str | None:
+def select_profile(only_id: bool = False) -> Profile | None:
     ask = Input().selection
 
     if ask == "q" or ask == "quit" or ask == "exit":
         copy("")
-        sys.exit(0)
+        exit(0)
 
-    if only_id:
-        return ask
+    if only_id is False:
+        if ask == "v" or ask == "view":
+            list_profiles(vp=True, qp=True, pp=True)
+            return None
 
-    if ask == "v" or ask == "view":
-        list_profiles(vp=True, qp=True, pp=True)
-        return None
-
-    if ask == "p" or ask == "prompt":
-        global PROMPT_PASSWORD
-        PROMPT_PASSWORD = not PROMPT_PASSWORD
-        return None
+        if ask == "p" or ask == "prompt":
+            global PROMPT_PASSWORD
+            PROMPT_PASSWORD = not PROMPT_PASSWORD
+            return None
 
     try:
-        return load_profiles()[ask]
-    except KeyError:
+        for profile in profiles():
+            if profile._id == int(ask):
+                if only_id:
+                    return profile._id
+                return profile
+    except ValueError:
         Print.fail("Invalid Input!")
         return None
 
@@ -58,7 +74,7 @@ def add_profile() -> None:
     counter = str(Input("Counter", default=1).integer)
     length = str(Input("Length", default=16).integer)
 
-    create_profile(site, username, counter, length)
+    create_profile(Profile(0, site, username, counter, length))
 
 
 def add_profiles() -> None:
@@ -67,27 +83,33 @@ def add_profiles() -> None:
         ask = Input("\nContinue (Y/n)", default="y", show_default=False).string.lower().strip()
         print()
 
-        if ask == "n" or ask not in ["y", "n", ""]:
+        if ask == "n" or ask not in ["y", ""]:
             list_profiles(vp=False, qp=False, pp=False)
             break
 
 
 def remove_profile() -> None:
-    list_profiles(vp=True, qp=False, pp=False)
+    list_profiles(vp=False, qp=True, pp=False)
     _id = select_profile(only_id=True)
-    delete_profile(_id)
+
+    if _id is not None:
+        delete_profile(str(_id))
+    else:
+        Print.warning("[*] Delete Operation Aborted!")
+        exit(2)
+
+    print()
     list_profiles(vp=False, qp=False, pp=False)
 
 
 def remove_profiles() -> None:
     list_profiles(vp=False, qp=False, pp=False)
-    Print.warning("\nEnter S.No. Of All Profiles You Want To Remove Separated By Coma ','")
-    Print.warning("For Example: > 1, 2, 3, 4")
+    Print.warning("\nEnter S.No. Of All Profiles You Want To Delete Separated By Coma ','")
+    Print.warning("For Example: 1, 2, 3, 4")
     Print.fail("Note: Any Non-Numeric Value Will Terminate The Process")
 
-    ids = []
     try:
-        ids = [i if i.isdigit() else int(i) for i in Input("").string.replace(" ", "").split(",")]
+        ids = [i if i.isdigit() else int(i) for i in Input("\n> ").string.replace(" ", "").split(",")]
     except ValueError as e:
         Print.fail(f"\nInvalid Input: {e}")
         exit(1)
@@ -106,16 +128,16 @@ def get_password(prompt: bool = False) -> None:
     while True:
         profile = select_profile()
         if profile is None: continue
-        passwd = generate_password(profile, mp_hash)
+        passwd = generate_profile_password(profile, mp_hash)
         copy(passwd)
         if PROMPT_PASSWORD: print(passwd)
         Print.info("Copied To Clipboard")
 
 
-def change_password() -> None:
+def change_password():
     list_profiles(vp=False, qp=True, pp=False)
-    _id = select_profile(only_id=True)
-    if _id == "" or _id.isdigit() is False: sys.exit(2)
+    profile = select_profile()
+    if profile is None: exit(2)
     Print.warning("> Leave field empty if you don't want to change something\n")
 
     site = Input("Site").string
@@ -128,45 +150,20 @@ def change_password() -> None:
     if length is not None:
         length = str(length)
 
-    update_profile(_id, site, username, counter, length)
+    update_profile(Profile(profile._id, site, username, counter, length))
     list_profiles(vp=False, qp=False, pp=False)
 
 
 def pwned_profiles():
     table = _Table(vp=False, qp=False, pp=False)
-    profiles = load_profiles().items()
-    mp_hash = get_master_password()
+    pwned_ids = HaveIBeenPwned().get_pwned_profile_ids()
 
-    Print.warning("\nChecking For Breached Generated Profile Passwords...")
-    pwned_id = HaveIBeenPwned(mp_hash).is_pwned()
-
-    if len(pwned_id):
-        for _id, profile in profiles:
-            if _id in pwned_id:
-                table.add_row(_id, profile)
+    if len(pwned_ids):
+        for profile in profiles():
+            if profile._id in pwned_ids:
+                table.add_row(profile.__dict__)
         table.tabulate()
         Print.fail("Critical: These Profile's Password Have Been Breached. Update Them Now And Check Again")
     else:
-        Print.info("Safe: Password wasn't found in any data breach")
-
-
-def usage() -> None:
-    Print.info("""
-USAGE: offsync [Option] (add, remove, update, prompt, help)
-
-Arguments:""")
-
-    Print.success("""
-    add            add new profile
-    add c          add multiple profiles at once""")
-
-    Print.fail("""
-    remove         remove new profile
-    remove c       remove multiple profiles at once""")
-
-    Print.warning("""
-    update         change profile counter to update password
-    pwned          check if generated passwords have been breached
-    prompt         show password in clear text
-    help           Show this help menu
-""")
+        table.tabulate()
+        Print.info("Safe: Passwords wasn't found in any data breach")

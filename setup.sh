@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # Print text in colored format
-function log_echo() {
+log_echo() {
   # $1 is the text to print
   # $2 is the color of the text
 
@@ -32,6 +32,11 @@ if ! [ -d /opt/offsync/ ]; then
   fi
 fi
 
+# Make the /opt/offsync/ directory owned by the current user
+if ! sudo chown -R "$(whoami):$(whoami)" /opt/offsync/; then
+  log_echo "Error: Failed to change ownership of /opt/offsync/" "red"
+fi
+
 # Create the /usr/share/licenses/offsync/ directory if it does not exist
 if ! [ -d /usr/share/licenses/offsync/ ]; then
   if ! sudo mkdir -p /usr/share/licenses/offsync/; then
@@ -40,7 +45,7 @@ if ! [ -d /usr/share/licenses/offsync/ ]; then
 fi
 
 # Copy the necessary files and directories to /opt/offsync/
-if ! sudo cp -r ./offsync ./main.py ./LICENSE ./README.md ./requirements.txt /opt/offsync/; then
+if ! cp -r ./offsync ./main.py ./LICENSE ./README.md ./requirements.txt /opt/offsync/; then
   log_echo "Error: Failed to copy files to /opt/offsync/" "red"
 fi
 
@@ -62,11 +67,6 @@ fi
 # Install dependencies
 if ! /opt/offsync/venv/bin/python3 -m pip install -r /opt/offsync/requirements.txt; then
   log_echo "Error: Failed to install the dependencies" "red"
-fi
-
-# Make the /opt/offsync/ directory owned by the current user
-if ! sudo chown -R "$(whoami):$(whoami)" /opt/offsync/; then
-  log_echo "Error: Failed to change ownership of /opt/offsync/" "red"
 fi
 
 log_echo "Now you can delete cloned repository" "green"

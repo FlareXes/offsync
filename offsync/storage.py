@@ -1,61 +1,93 @@
-import json
-import os.path
-from typing import Dict
+import sqlite3
+from typing import List, Generator
 
 from offsync import DATABASE
+from offsync.template import Profile
 
 
-def load_profiles() -> Dict[str, Dict[str, str]]:
-    with open(DATABASE, "r") as f:
-        return json.load(f)
+class Database:
+    def __init__(self):
+        self.conn = sqlite3.connect(DATABASE)
+        self.cursor = self.conn.cursor()
+
+    def __del__(self):
+        self.conn.close()
+
+    def init_database(self):
+        account_table_schema = """
+        CREATE TABLE IF NOT EXISTS Profiles
+        (id              INTEGER     PRIMARY KEY,
+         site            TEXT        NOT NULL,
+         username        TEXT        NOT NULL,
+         counter         TEXT        NOT NULL,
+         length          TEXT        NOT NULL);
+        """
+
+        self.cursor.execute(account_table_schema)
+        self.conn.commit()
+
+    def create(self, profile_values: List):
+        query = """INSERT INTO Profiles (site, username, counter, length) VALUES (?, ?, ?, ?)"""
+        self.cursor.execute(query, profile_values)
+        self.conn.commit()
+
+    def read(self):
+        query = """SELECT * FROM Profiles"""
+        self.cursor.execute(query)
+        return self.cursor.fetchall()
+
+    def update(self, profile: Profile):
+        query = """UPDATE Profiles SET site = ?, username = ?, counter = ?, length = ? WHERE id = ?"""
+
+        values = (profile.site, profile.username, profile.counter, profile.length, profile._id)
+        self.cursor.execute(query, values)
+        self.conn.commit()
+
+    def delete(self, profile_id: str) -> None:
+        account_query = """DELETE FROM Profiles WHERE id = ?"""
+        self.cursor.execute(account_query, profile_id)
+        self.conn.commit()
+
+    def select_by_id(self, profile_id: str):
+        query = """SELECT * FROM Profiles WHERE id = ?"""
+        self.cursor.execute(query, profile_id)
+        return self.cursor.fetchone()
 
 
-def dump_profiles(profiles: Dict[str, Dict[str, str]]) -> None:
-    with open(DATABASE, "w") as f:
-        json.dump(profiles, f, indent=4)
+def profiles() -> Generator:
+    try:
+        raw_profiles = Database().read()
+        for raw_profile in raw_profiles:
+            yield Profile(*raw_profile)
+    except Exception as e:
+        print("Error at DEF profiles:", e)
 
 
-# TODO: WORK ON THIS [save_profile] - Priority: 2
-def save_profile(profile: Dict[str, Dict[str, str]]) -> None:
-    profiles = load_profiles()
-    if len(profiles) > 0:
-        max_id = max(map(int, profiles.keys()))
-    else:
-        max_id = 0
-    profile[str(max_id + 1)] = profile['1']
-    if len(profile) > 1: del profile['1']
-    profiles.update(profile)
-    dump_profiles(profiles)
+def create_profile(profile: Profile) -> None:
+    try:
+        Database().create(list(profile.__dict__.values())[1:])
+    except Exception as e:
+        print("Error at DEF create_profile:", e)
 
 
 def delete_profile(_id: str) -> None:
-    profiles = load_profiles()
-    try:
-        del profiles[_id]
-    except KeyError:
-        pass
-    dump_profiles(profiles)
+    Database().delete(_id)
 
 
-def update_profile(_id: str, site: str, username: str, counter: str, length: str) -> None:
-    profiles = load_profiles()
-    try:
-        if site is not None:
-            profiles[_id]["site"] = site
+def update_profile(new_profile: Profile) -> None:
+    db = Database()
+    original_profile = Profile(*db.select_by_id(str(new_profile._id)))
 
-        if username is not None:
-            profiles[_id]["username"] = username
+    if new_profile.site is not None:
+        original_profile.site = new_profile.site
 
-        if counter is not None:
-            profiles[_id]["counter"] = counter
+    if new_profile.username is not None:
+        original_profile.username = new_profile.username
 
-        if length is not None:
-            profiles[_id]["length"] = length
-    except KeyError:
-        pass
-    dump_profiles(profiles)
+    if new_profile.counter is not None:
+        original_profile.counter = new_profile.counter
 
+    if new_profile.length is not None:
+        original_profile.length = new_profile.length
 
-if not os.path.exists(DATABASE):
-    with open(DATABASE, "w") as file:
-        json.dump({}, file)
+    db.update(original_profile)

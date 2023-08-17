@@ -1,15 +1,20 @@
 import sys
 
-from offsync import cli
 from pyperclip import copy
+
+from offsync import cli
+from offsync.storage import Database
 from offsync.ui import set_mode
+
+Database().init_database()
 
 if __name__ == "__main__":
     args = sys.argv
     argc = len(args)
     continuous = argc == 3 and args[2] == "c"
 
-    if argc > 1 and args[1] not in ["add", "remove", "update", "prompt", "pwned", "help"] or argc == 3 and args[2] != "c":
+    if argc > 1 and args[1] not in ["add", "remove", "update", "prompt", "pwned", "help"] or argc == 3 and args[
+        2] != "c":
         cli.usage()
         print(">>> Invalid Option! <<<")
         sys.exit(2)

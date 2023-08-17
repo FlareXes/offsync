@@ -4,7 +4,7 @@ from rich.console import Console
 from rich.prompt import IntPrompt, Prompt
 from rich.table import Table
 
-MODE = ""
+MODE = "> "
 
 
 def unpack_dict(**kwargs: Dict[str, str]) -> Any:
@@ -38,9 +38,9 @@ class _Table:
         if self._qp:
             return quit_format
 
-    def add_row(self, _id: str, profile: Dict[str, str]) -> None:
-        site, username, counter, length = unpack_dict(**profile)
-        self.table.add_row(_id, site, username, length, counter)
+    def add_row(self, profile: Dict[int | str, str]) -> None:
+        _id, site, username, counter, length = unpack_dict(**profile)
+        self.table.add_row(str(_id), site, username, length, counter)
 
     def tabulate(self) -> None:
         console = Console()
