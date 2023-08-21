@@ -40,7 +40,7 @@ def list_profiles(*, vp, qp, pp) -> None:
     table.tabulate()
 
 
-def select_profile(only_id: bool = False) -> Profile | None:
+def select_profile(only_id: bool = False) -> None | int | Profile:
     ask = Input().selection
 
     if ask == "q" or ask == "quit" or ask == "exit":
@@ -134,7 +134,7 @@ def get_password(prompt: bool = False) -> None:
         Print.info("Copied To Clipboard")
 
 
-def change_password():
+def change_password() -> None:
     list_profiles(vp=False, qp=True, pp=False)
     profile = select_profile()
     if profile is None: exit(2)
@@ -154,7 +154,7 @@ def change_password():
     list_profiles(vp=False, qp=False, pp=False)
 
 
-def pwned_profiles():
+def pwned_profiles() -> None:
     table = _Table(vp=False, qp=False, pp=False)
     pwned_ids = HaveIBeenPwned().get_pwned_profile_ids()
 

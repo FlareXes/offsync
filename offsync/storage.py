@@ -1,5 +1,5 @@
 import sqlite3
-from typing import List, Generator
+from typing import List, Iterator, Tuple
 
 from offsync import DATABASE
 from offsync.template import Profile
@@ -13,7 +13,7 @@ class Database:
     def __del__(self):
         self.conn.close()
 
-    def init_database(self):
+    def init_database(self) -> None:
         account_table_schema = """
         CREATE TABLE IF NOT EXISTS Profiles
         (id              INTEGER     PRIMARY KEY,
@@ -26,17 +26,17 @@ class Database:
         self.cursor.execute(account_table_schema)
         self.conn.commit()
 
-    def create(self, profile_values: List):
+    def create(self, profile_values: List) -> None:
         query = """INSERT INTO Profiles (site, username, counter, length) VALUES (?, ?, ?, ?)"""
         self.cursor.execute(query, profile_values)
         self.conn.commit()
 
-    def read(self):
+    def read(self) -> List:
         query = """SELECT * FROM Profiles"""
         self.cursor.execute(query)
         return self.cursor.fetchall()
 
-    def update(self, profile: Profile):
+    def update(self, profile: Profile) -> None:
         query = """UPDATE Profiles SET site = ?, username = ?, counter = ?, length = ? WHERE id = ?"""
 
         values = (profile.site, profile.username, profile.counter, profile.length, profile._id)
@@ -48,13 +48,13 @@ class Database:
         self.cursor.execute(account_query, profile_id)
         self.conn.commit()
 
-    def select_by_id(self, profile_id: str):
+    def select_by_id(self, profile_id: str) -> Tuple:
         query = """SELECT * FROM Profiles WHERE id = ?"""
         self.cursor.execute(query, profile_id)
         return self.cursor.fetchone()
 
 
-def profiles() -> Generator:
+def profiles() -> Iterator[Profile]:
     try:
         raw_profiles = Database().read()
         for raw_profile in raw_profiles:

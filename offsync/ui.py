@@ -12,7 +12,7 @@ def unpack_dict(**kwargs: Dict[str, str]) -> Any:
 
 
 class _Table:
-    def __init__(self, *, vp: bool = False, qp: bool = False, pp: bool = False) -> None:
+    def __init__(self, *, vp: bool = False, qp: bool = False, pp: bool = False):
         self.table = Table()
         self.table.add_column("S.No.", justify="center", style="bold magenta", header_style="magenta")
         self.table.add_column("Site", justify="center", style="bold green", header_style="green")
@@ -56,16 +56,16 @@ class Input:
         self.show_default = show_default
 
     @property
-    def integer(self):
+    def integer(self) -> int:
         return IntPrompt.ask(f"[bold cyan]{self.text}[/bold cyan]", default=self.default,
                              show_default=self.show_default)
 
     @property
-    def string(self):
+    def string(self) -> str:
         return Prompt.ask(f"[bold cyan]{self.text}[/bold cyan]", default=self.default, show_default=self.show_default)
 
     @property
-    def selection(self):
+    def selection(self) -> str:
         mode = get_mode()
         if mode == "View Mode":
             return Prompt.ask(f"\n[bold green]{mode}[/bold green]").strip()
@@ -84,27 +84,27 @@ class Input:
 
 
 class Print:
-    def __init__(self, text: str = None):
+    def __init__(self, text: str):
         console = Console()
         console.print(f"[bold]{text}[/bold]")
 
     @staticmethod
-    def success(text):
+    def success(text: str) -> None:
         console = Console()
         console.print(f"[bold green]{text}[/bold green]")
 
     @staticmethod
-    def warning(text):
+    def warning(text: str) -> None:
         console = Console()
         console.print(f"[bold yellow]{text}[/bold yellow]")
 
     @staticmethod
-    def fail(text):
+    def fail(text: str) -> None:
         console = Console()
         console.print(f"[bold red]{text}[/bold red]")
 
     @staticmethod
-    def info(text):
+    def info(text: str):
         console = Console()
         console.print(f"[bold cyan]{text}[/bold cyan]")
 

@@ -1,5 +1,5 @@
 from hashlib import sha1
-from typing import Dict, List
+from typing import Dict, List, Iterator
 from urllib.request import Request, urlopen
 
 from offsync.security import get_master_password, generate_profile_password
@@ -24,7 +24,7 @@ class HaveIBeenPwned:
 
         return False
 
-    def profiles_config(self):
+    def profiles_config(self) -> Iterator[Dict[str, str]]:
         for profile in profiles():
             p_hash = sha1(generate_profile_password(profile, self.mp_hash).encode("UTF-8")).hexdigest().upper()
             yield {
@@ -33,7 +33,7 @@ class HaveIBeenPwned:
                 "suffix": p_hash[5:],
             }
 
-    def get_pwned_profile_ids(self) -> List:
+    def get_pwned_profile_ids(self) -> List[str | None]:
         Print.warning("Checking For Breached Generated Profile Passwords...")
 
         pwned_password_ids = []
