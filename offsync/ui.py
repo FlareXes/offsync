@@ -12,7 +12,20 @@ def unpack_dict(**kwargs: Dict[str, str]) -> Any:
 
 
 class _Table:
+    """
+    A helper class for creating and displaying formatted tables for profile data.
+    """
+
     def __init__(self, *, vp: bool = False, qp: bool = False, pp: bool = False):
+        """
+        Initialize the table with columns and prompt flags.
+
+        Args:
+            vp (bool): A flag indicating View Prompt visibility.
+            qp (bool): A flag indicating Quit Prompt visibility.
+            pp (bool): A flag indicating Password Prompt visibility.
+        """
+
         self.table = Table()
         self.table.add_column("S.No.", justify="center", style="bold magenta", header_style="magenta")
         self.table.add_column("Site", justify="center", style="bold green", header_style="green")
@@ -25,6 +38,13 @@ class _Table:
         self._pp = pp  # Password Prompt
 
     def prompts(self) -> str:
+        """
+        Generate and return formatted prompt options based on prompt flags.
+
+        Returns:
+            str: Formatted prompt options string.
+        """
+
         password_format = "[bold magenta] p  [/bold magenta][bold white]>[/bold white]  [bold]print password[/bold]"
         view_format = "[bold magenta] v  [/bold magenta][bold white]>[/bold white]  [bold]view accounts[/bold]"
         quit_format = "[bold magenta] q  [/bold magenta][bold white]>[/bold white]  [bold]quit[/bold]"
@@ -43,6 +63,10 @@ class _Table:
         self.table.add_row(str(_id), site, username, length, counter)
 
     def tabulate(self) -> None:
+        """
+        Display the formatted table along with any available prompt options.
+        """
+
         console = Console()
         console.print(self.table)
         prompts = self.prompts()
@@ -50,7 +74,20 @@ class _Table:
 
 
 class Input:
+    """
+    A collection of methods for user input prompts.
+    """
+
     def __init__(self, text: str = None, default: str | int = None, show_default: bool = True):
+        """
+        Initialize an Input instance with prompt attributes.
+
+        Args:
+            text (str): The prompt text.
+            default (str | int): The default value for the input.
+            show_default (bool): Whether to show choices in prompt.
+        """
+
         self.text = text
         self.default = default
         self.show_default = show_default
@@ -78,13 +115,34 @@ class Input:
 
     @staticmethod
     def getpass(prompt: str) -> str:
+        """
+        Prompt the user for a password input in a secure manner.
+
+        Args:
+            prompt (str): The prompt text.
+
+        Returns:
+            str: The user-input password.
+        """
+
         ans = Prompt.ask(f"[bold medium_spring_green]{prompt}[/bold medium_spring_green]", password=True, default="",
                          show_default=False)
         return ans
 
 
 class Print:
+    """
+    A collection of methods for colored console printing.
+    """
+
     def __init__(self, text: str):
+        """
+        Initialize a Print instance with text to be printed.
+
+        Args:
+            text (str): The text to be printed.
+        """
+
         console = Console()
         console.print(f"[bold]{text}[/bold]")
 

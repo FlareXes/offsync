@@ -10,6 +10,8 @@ PROMPT_PASSWORD = False
 
 
 def usage() -> None:
+    """Display usage information for the offsync command-line tool."""
+
     Print.info("""
 USAGE: offsync [Option] (add, remove, update, prompt, pwned, help)
 
@@ -32,6 +34,15 @@ Arguments:""")
 
 
 def list_profiles(*, vp, qp, pp) -> None:
+    """
+    Display a list of user profiles in a formatted table.
+
+    Args:
+        vp (bool): View Prompt flag.
+        qp (bool): Quit Prompt flag.
+        pp (bool): Password Prompt flag.
+    """
+
     table = _Table(vp=vp, qp=qp, pp=pp)
 
     for profile in profiles():
@@ -41,6 +52,16 @@ def list_profiles(*, vp, qp, pp) -> None:
 
 
 def select_profile(only_id: bool = False) -> None | int | Profile:
+    """
+    Prompt the user to select a profile from the table.
+
+    Args:
+        only_id (bool): Flag to indicate if only the ID should be returned.
+
+    Returns:
+        None | int | Profile: The selected profile, its ID, or None.
+    """
+
     ask = Input().selection
 
     if ask == "q" or ask == "quit" or ask == "exit":
@@ -69,6 +90,8 @@ def select_profile(only_id: bool = False) -> None | int | Profile:
 
 
 def add_profile() -> None:
+    """Prompt the user to add a new profile."""
+
     site = Input("Site", default="None").string
     username = Input("Username / E-Mail", default="None").string
     counter = str(Input("Counter", default=1).integer)
@@ -78,6 +101,8 @@ def add_profile() -> None:
 
 
 def add_profiles() -> None:
+    """Prompt the user to add multiple profiles."""
+
     while True:
         add_profile()
         ask = Input("\nContinue (Y/n)", default="y", show_default=False).string.lower().strip()
@@ -89,6 +114,8 @@ def add_profiles() -> None:
 
 
 def remove_profile() -> None:
+    """Prompt the user to remove a profile."""
+
     list_profiles(vp=False, qp=True, pp=False)
     _id = select_profile(only_id=True)
 
@@ -103,6 +130,8 @@ def remove_profile() -> None:
 
 
 def remove_profiles() -> None:
+    """Prompt the user to remove multiple profiles."""
+
     list_profiles(vp=False, qp=False, pp=False)
     Print.warning("\nEnter S.No. Of All Profiles You Want To Delete Separated By Coma ','")
     Print.warning("For Example: 1, 2, 3, 4")
@@ -120,6 +149,13 @@ def remove_profiles() -> None:
 
 
 def get_password(prompt: bool = False) -> None:
+    """
+    Generate and copy a profile password to the clipboard.
+
+    Args:
+        prompt (bool): Flag to indicate if the password should be printed.
+    """
+
     global PROMPT_PASSWORD
     PROMPT_PASSWORD = prompt
     mp_hash = get_master_password()
@@ -135,6 +171,8 @@ def get_password(prompt: bool = False) -> None:
 
 
 def change_password() -> None:
+    """Prompt the user to change a profile's password."""
+
     list_profiles(vp=False, qp=True, pp=False)
     profile = select_profile()
     if profile is None: exit(2)
@@ -155,6 +193,8 @@ def change_password() -> None:
 
 
 def pwned_profiles() -> None:
+    """Display a list of profiles with breached passwords in a table format."""
+
     table = _Table(vp=False, qp=False, pp=False)
     pwned_ids = HaveIBeenPwned().get_pwned_profile_ids()
 
