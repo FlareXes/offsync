@@ -61,7 +61,7 @@ def generate_profile_password(profile: Profile, master_password_hash: str) -> st
 
     seed = _calc_seed(profile, master_password_hash)
     random.seed(seed)
-    return "".join(random.choice(CHAR_ARRAY) for i in range(int(profile.length)))
+    return "".join(random.choice(CHAR_ARRAY) for _ in range(int(profile.length)))
 
 
 def get_master_password() -> str:

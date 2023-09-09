@@ -80,9 +80,9 @@ def select_profile(only_id: bool = False) -> None | int | Profile:
 
     try:
         for profile in profiles():
-            if profile._id == int(ask):
+            if profile.id == int(ask):
                 if only_id:
-                    return profile._id
+                    return int(profile.id)
                 return profile
     except ValueError:
         Print.fail("Invalid Input!")
@@ -97,7 +97,7 @@ def add_profile() -> None:
     length = str(Input("Length", default=16).integer)
     counter = str(Input("Counter", default=1).integer)
 
-    create_profile(Profile(0, site, username, counter, length))
+    create_profile(Profile("# Placeholder to Id", site, username, counter, length))
 
 
 def add_profiles() -> None:
@@ -125,7 +125,6 @@ def remove_profile() -> None:
         Print.warning("[*] Delete Operation Aborted!")
         exit(2)
 
-    print()
     list_profiles(vp=False, qp=False, pp=False)
 
 
@@ -188,7 +187,7 @@ def change_password() -> None:
     if length is not None:
         length = str(length)
 
-    update_profile(Profile(profile._id, site, username, counter, length))
+    update_profile(Profile(profile.id, site, username, counter, length))
     list_profiles(vp=False, qp=False, pp=False)
 
 
@@ -200,7 +199,7 @@ def pwned_profiles() -> None:
 
     if len(pwned_ids):
         for profile in profiles():
-            if profile._id in pwned_ids:
+            if profile.id in pwned_ids:
                 table.add_row(profile.__dict__)
         table.tabulate()
         Print.fail("Critical: These Profile's Password Have Been Breached. Update Them Now And Check Again")

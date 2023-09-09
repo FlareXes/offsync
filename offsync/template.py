@@ -3,7 +3,7 @@ from dataclasses import dataclass
 
 @dataclass
 class Profile:
-    _id: int = None,
+    id: str = None,
     site: str = "None"
     username: str = "None"
     counter: str = "1"

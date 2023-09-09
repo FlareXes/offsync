@@ -50,7 +50,7 @@ class HaveIBeenPwned:
         for profile in profiles():
             p_hash = sha1(generate_profile_password(profile, self.mp_hash).encode("UTF-8")).hexdigest().upper()
             yield {
-                "id": profile._id,
+                "id": profile.id,
                 "prefix": p_hash[:5],
                 "suffix": p_hash[5:],
             }

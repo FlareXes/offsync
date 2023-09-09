@@ -76,7 +76,7 @@ class Database:
 
         query = """UPDATE Profiles SET site = ?, username = ?, counter = ?, length = ? WHERE id = ?"""
 
-        values = (profile.site, profile.username, profile.counter, profile.length, profile._id)
+        values = (profile.site, profile.username, profile.counter, profile.length, profile.id)
         self.cursor.execute(query, values)
         self.conn.commit()
 
@@ -137,7 +137,7 @@ def delete_profile(_id: str) -> None:
 
 def update_profile(new_profile: Profile) -> None:
     db = Database()
-    original_profile = Profile(*db.select_by_id(str(new_profile._id)))
+    original_profile = Profile(*db.select_by_id(str(new_profile.id)))
 
     if new_profile.site is not None:
         original_profile.site = new_profile.site
