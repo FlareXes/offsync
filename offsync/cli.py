@@ -38,9 +38,9 @@ def list_profiles(*, vp, qp, pp) -> None:
     Display a list of user profiles in a formatted table.
 
     Args:
-        vp (bool): View Prompt flag.
-        qp (bool): Quit Prompt flag.
-        pp (bool): Password Prompt flag.
+        vp (bool): View prompt, flag.
+        qp (bool): Quit prompt, flag.
+        pp (bool): Password prompt, flag.
     """
 
     table = _Table(vp=vp, qp=qp, pp=pp)
@@ -94,8 +94,8 @@ def add_profile() -> None:
 
     site = Input("Site", default="None").string
     username = Input("Username / E-Mail", default="None").string
-    counter = str(Input("Counter", default=1).integer)
     length = str(Input("Length", default=16).integer)
+    counter = str(Input("Counter", default=1).integer)
 
     create_profile(Profile(0, site, username, counter, length))
 
@@ -138,7 +138,7 @@ def remove_profiles() -> None:
     Print.fail("Note: Any Non-Numeric Value Will Terminate The Process")
 
     try:
-        ids = [i if i.isdigit() else int(i) for i in Input("\n> ").string.replace(" ", "").split(",")]
+        ids = [i if i.isdigit() else int(i) for i in Input("\nDelete Mode").selection.replace(" ", "").split(",")]
     except ValueError as e:
         Print.fail(f"\nInvalid Input: {e}")
         exit(1)
@@ -180,8 +180,8 @@ def change_password() -> None:
 
     site = Input("Site").string
     username = Input("Username / E-Mail").string
-    counter = Input("Counter").integer
     length = Input("Length").integer
+    counter = Input("Counter").integer
 
     if counter is not None:
         counter = str(counter)

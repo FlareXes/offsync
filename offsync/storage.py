@@ -89,7 +89,7 @@ class Database:
         """
 
         account_query = """DELETE FROM Profiles WHERE id = ?"""
-        self.cursor.execute(account_query, profile_id)
+        self.cursor.execute(account_query, (profile_id,))
         self.conn.commit()
 
     def select_by_id(self, profile_id: str) -> Tuple:
@@ -145,10 +145,10 @@ def update_profile(new_profile: Profile) -> None:
     if new_profile.username is not None:
         original_profile.username = new_profile.username
 
-    if new_profile.counter is not None:
-        original_profile.counter = new_profile.counter
-
     if new_profile.length is not None:
         original_profile.length = new_profile.length
+
+    if new_profile.counter is not None:
+        original_profile.counter = new_profile.counter
 
     db.update(original_profile)
