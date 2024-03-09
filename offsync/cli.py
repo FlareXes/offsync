@@ -1,3 +1,4 @@
+import csv
 from pyperclip import copy
 
 from offsync.api import HaveIBeenPwned
@@ -13,7 +14,7 @@ def usage() -> None:
     """Display usage information for the offsync command-line tool."""
 
     Print.info("""
-USAGE: offsync [Option] (add, remove, update, prompt, pwned, help)
+USAGE: offsync [Option] (add, remove, update, pwned, prompt, export, help)
 
 Arguments:""")
 
@@ -29,6 +30,7 @@ Arguments:""")
     update         change profile counter to update password
     pwned          check if generated passwords have been breached
     prompt         show password in clear text
+    export         export profiles with plaintext passwords
     help           Show this help menu
 """)
 
@@ -147,6 +149,25 @@ def remove_profiles() -> None:
     list_profiles(vp=False, qp=False, pp=False)
 
 
+def pwned_profiles() -> None:
+    """Display a list of profiles with breached passwords in a table format."""
+
+    table = _Table(vp=False, qp=False, pp=False)
+    pwned_ids = HaveIBeenPwned().get_pwned_profile_ids()
+
+    if len(pwned_ids):
+        for profile in profiles():
+            if profile.id in pwned_ids:
+                table.add_row(profile.__dict__)
+        table.tabulate()
+        Print.fail(
+            "Critical: These Profile's Password Have Been Breached. Update Them Now And Check Again"
+        )
+    else:
+        table.tabulate()
+        Print.info("Safe: Passwords wasn't found in any data breach")
+
+
 def get_password(prompt: bool = False) -> None:
     """
     Generate and copy a profile password to the clipboard.
@@ -191,18 +212,19 @@ def change_password() -> None:
     list_profiles(vp=False, qp=False, pp=False)
 
 
-def pwned_profiles() -> None:
-    """Display a list of profiles with breached passwords in a table format."""
+def export_passwords() -> None:
+    mp_hash = get_master_password()
+    profiles_list = []
 
-    table = _Table(vp=False, qp=False, pp=False)
-    pwned_ids = HaveIBeenPwned().get_pwned_profile_ids()
+    for profile in profiles():
+        passwd = generate_profile_password(profile, mp_hash)
+        profile = profile.__dict__
+        profile["password"] = passwd
+        profiles_list.append(profile)
 
-    if len(pwned_ids):
-        for profile in profiles():
-            if profile.id in pwned_ids:
-                table.add_row(profile.__dict__)
-        table.tabulate()
-        Print.fail("Critical: These Profile's Password Have Been Breached. Update Them Now And Check Again")
-    else:
-        table.tabulate()
-        Print.info("Safe: Passwords wasn't found in any data breach")
+    with open("offsync-passwords-export.csv", "w") as csv_file:
+        writer = csv.DictWriter(csv_file, fieldnames=profile.keys())
+        writer.writeheader()
+        writer.writerows(profiles_list)
+
+    Print.info("Passwords exported to `offsync-passwords-export.csv`")

@@ -15,7 +15,7 @@ if __name__ == "__main__":
     argc = len(args)
     continuous = argc == 3 and args[2] == "c"
 
-    if argc > 1 and args[1] not in ["add", "remove", "update", "prompt", "pwned", "help"] or argc == 3 and args[
+    if argc > 1 and args[1] not in ["add", "remove", "update", "prompt", "pwned", "export", "help"] or argc == 3 and args[
         2] != "c":
         cli.usage()
         print(">>> Invalid Option! <<<")
@@ -56,6 +56,14 @@ if __name__ == "__main__":
             sys.exit(2)
         else:
             cli.pwned_profiles()
+
+    elif argc != 1 and args[1] == "export":
+        if continuous:
+            cli.usage()
+            print(">>> Unsupported Argument `c` <<<")
+            sys.exit(2)
+        else:
+            cli.export_passwords()
 
     elif argc != 1 and args[1] == "help":
         cli.usage()
