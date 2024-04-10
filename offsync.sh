@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env bash
 
 # Check if /opt/offsync/ directory does not exist
 if ! [ -d /opt/offsync/ ]; then
