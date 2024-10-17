@@ -1,14 +1,13 @@
 # OffSync
 
-
 <p align="center"><strong>OffSync</strong> is a simple open-source stateless password manager inspired by LessPass. <br>The significant difference is that it allows users to store profiles (site, username, password length, etc.) locally without creating an account. So, no bloated web and online accounts.</p>
+
+<p align="center">
+    <img src="./assets/preview.png" alt="Demo GIF" />
+</p>
 
 ### What does stateless actually mean?
 `Stateless` simply means that your password is never being stored. You just store some information about your account locally. And, Passwords get generated on the fly depending on the account info you provided and the secret key. There is no master password. Every secret key is master password. Didn't understand, [check out yourself here](https://www.lesspass.com/).
-
-<p align="center">
-    <img width="560" src="./assets/preview.png" alt="Demo GIF" />
-</p>
 
 ---
 ## How this works?
