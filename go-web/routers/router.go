@@ -1,10 +1,11 @@
 package routers
 
 import (
-	"github.com/flarexes/offsync/go-web/controllers"
 	beego "github.com/beego/beego/v2/server/web"
+	"github.com/flarexes/offsync/go-web/controllers"
 )
 
 func init() {
-    beego.Router("/", &controllers.MainController{})
+	beego.Router("/", &controllers.OffsyncController{})
+	beego.Router("/submit", &controllers.OffsyncController{}, "post:Post")
 }
