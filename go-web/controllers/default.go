@@ -1,50 +1,41 @@
 package controllers
 
 import (
-	"fmt"
-
 	beego "github.com/beego/beego/v2/server/web"
+	models "github.com/flarexes/offsync/go-web/models"
 )
-
-type MainController struct {
-	beego.Controller
-}
-
-func (c *MainController) Get() {
-	c.Data["Website"] = "beego.vip"
-	c.Data["Email"] = "astaxie@gmail.com"
-	c.TplName = "index.tpl"
-}
 
 type OffsyncController struct {
 	beego.Controller
 }
 
 func (c *OffsyncController) Get() {
-	c.Data["Site"] = "GitHub"
-	c.Data["Username"] = "FlareXes"
 	c.TplName = "index.tpl"
 }
 
-type Profile struct {
-	Site     string `form:"site"`
-	Username string `form:"username"`
-	Length   string `form:"length"`
-	Counter  string `form:"counter"`
-}
-
 func (c *OffsyncController) Post() {
-	site := c.GetString("site")
-	username := c.GetString("username")
-	length := c.GetString("length")
-	counter := c.GetString("counter")
-	// c.TplName = "submit.html"
-	c.Ctx.Redirect(302, "/")
+	var profile models.Profile
+	c.TplName = "index.tpl"
 
-	if site == "" || username == "" || length == "" || counter == "" {
-		fmt.Println("Missing form fields!")
-	} else {
-		fmt.Println(site, username, length, counter)
+	if err := c.ParseForm(&profile); err != nil {
+		c.Ctx.WriteString("Error binding form data: " + err.Error())
+		return
 	}
-	fmt.Println(site, username, length, counter)
+
+	password := models.GeneratePassword(profile)
+
+	c.Data["Answer"] = password
+
+	// c.SetSession("password", password)
+
+	c.SetSession("username", "john_doe")
+    c.SetSession("logged_in", true)
+    c.Ctx.WriteString("Session set!")
+
+	// TODO
+	// if site == "" || username == "" || length == "" || counter == "" {
+	// 	fmt.Println("Missing form fields!")
+	// }
+	// c.Ctx.Redirect(302, "/")
+	// c.Redirect("/", 302)
 }

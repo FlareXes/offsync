@@ -118,15 +118,19 @@
     <button id="themeToggle" class="theme-toggle" aria-label="Toggle dark mode">🌓</button>
 
     <div class="container">
-        <h2>Password Generator</h2>
+        <h2>Stateless: {{.Answer}}</h2>
         <form id="passwordForm" method="post" action="/submit">
             <div class="form-group">
                 <label for="site">Site</label>
-                <input type="text" id="site" name="site" placeholder="Enter site name" value="{{.Site}}" required>
+                <input type="text" id="site" name="site" placeholder="Enter site name" required>
             </div>
             <div class="form-group">
                 <label for="username">Username</label>
-                <input type="text" id="username" name="username" placeholder="Enter username" value="{{.Username}}" required>
+                <input type="text" id="username" name="username" placeholder="Enter username" required>
+            </div>
+            <div class="form-group">
+                <label for="secret">Secret</label>
+                <input type="text" id="secret" name="secret" placeholder="Enter secret" required>
             </div>
             <div class="row">
                 <div class="col">
@@ -138,14 +142,15 @@
                 <div class="col">
                     <div class="form-group">
                         <label for="counter">Counter</label>
-                        <input type="number" id="counter" name="counter" value="1" placeholder="Counter" min="1" required>
+                        <input type="number" id="counter" name="counter" value="1" placeholder="Counter" min="1"
+                            required>
                     </div>
                 </div>
             </div>
             <button type="submit" id="generateButton">Generate & Copy</button>
         </form>
     </div>
-<!-- 
+
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             const themeToggle = document.getElementById('themeToggle');
@@ -164,15 +169,8 @@
             });
 
             generateButton.addEventListener('click', function () {
-                const site = document.getElementById('site').value;
-                const username = document.getElementById('username').value;
-                const length = document.getElementById('length').value;
-                const counter = document.getElementById('counter').value;
+                const generatedPassword = "{{.Answer}}";
 
-                // This is a placeholder for the actual password generation logic
-                const generatedPassword = `${site}-${username}-${length}-${counter}`;
-
-                // Copy to clipboard
                 navigator.clipboard.writeText(generatedPassword).then(function () {
                     alert('Password generated and copied to clipboard!');
                 }, function (err) {
@@ -188,7 +186,7 @@
                 setTheme(true);
             }
         });
-    </script> -->
+    </script>
 </body>
 
 </html>
