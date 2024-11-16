@@ -10,32 +10,28 @@ type OffsyncController struct {
 }
 
 func (c *OffsyncController) Get() {
+	userID := c.GetSession("user_id")
+	if userID == nil {
+		c.Redirect("/signin", 302)
+		return
+	}
 	c.TplName = "index.tpl"
 }
 
 func (c *OffsyncController) Post() {
-	var profile models.Profile
-	c.TplName = "index.tpl"
+	userID := c.GetSession("user_id")
+	if userID == nil {
+		c.Redirect("/signin", 302)
+		return
+	}
 
+	var profile models.Profile
 	if err := c.ParseForm(&profile); err != nil {
 		c.Ctx.WriteString("Error binding form data: " + err.Error())
 		return
 	}
-
 	password := models.GeneratePassword(profile)
 
-	c.Data["Answer"] = password
-
-	// c.SetSession("password", password)
-
-	c.SetSession("username", "john_doe")
-    c.SetSession("logged_in", true)
-    c.Ctx.WriteString("Session set!")
-
-	// TODO
-	// if site == "" || username == "" || length == "" || counter == "" {
-	// 	fmt.Println("Missing form fields!")
-	// }
-	// c.Ctx.Redirect(302, "/")
-	// c.Redirect("/", 302)
+	c.Ctx.SetCookie("password", password)
+	c.Redirect("/", 302)
 }
