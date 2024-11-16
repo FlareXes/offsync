@@ -100,6 +100,16 @@
             opacity: 0.9;
         }
 
+        .copy-button {
+            margin-left: 0.5rem;
+            padding: 0.5rem 1rem;
+            width: 20%;
+        }
+
+        .input-group {
+            display: flex;
+        }
+
         .theme-toggle {
             position: fixed;
             top: 1rem;
@@ -147,14 +157,46 @@
                     </div>
                 </div>
             </div>
-            <button type="submit" id="generateButton">Generate & Copy</button>
+            <div class="form-group">
+                <button type="submit" id="generateButton">Generate & Copy</button>
+            </div>
+            <div class="form-group">
+                <label for="generatedPassword">Generated Password</label>
+                <div class="input-group">
+                    <input type="text" id="generatedPassword" readonly>
+                    <button type="button" class="copy-button"
+                        onclick="copyToClipboard('generatedPassword')">Copy</button>
+                </div>
+            </div>
         </form>
     </div>
 
     <script>
+        function copyToClipboard(inputId) {
+            var inputElement = document.getElementById(inputId);
+            navigator.clipboard.writeText(inputElement.value)
+        }
+
         document.addEventListener('DOMContentLoaded', function () {
             const themeToggle = document.getElementById('themeToggle');
             const generateButton = document.getElementById('generateButton');
+            const passwordCookie = document.cookie.split('; ').find(row => row.startsWith('password='));
+
+            if (passwordCookie) {
+                const passwordValue = passwordCookie.split('=')[1];
+                document.getElementById('generatedPassword').value = passwordValue
+                document.cookie = "password=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+                
+                
+                navigator.clipboard.writeText(passwordValue)
+                    .then(() => {
+                        console.log("Password copied to clipboard.");
+                    })
+                    .catch(err => {
+                        console.error('Error copying password: ', err);
+                    });
+
+            }
 
             function setTheme(isDark) {
                 document.body.classList.toggle('dark', isDark);
@@ -168,17 +210,6 @@
                 setTheme(isDark);
             });
 
-            generateButton.addEventListener('click', function () {
-                const generatedPassword = "{{.Answer}}";
-
-                navigator.clipboard.writeText(generatedPassword).then(function () {
-                    alert('Password generated and copied to clipboard!');
-                }, function (err) {
-                    console.error('Could not copy text: ', err);
-                });
-            });
-
-            // Check for saved theme preference or prefer-color-scheme
             const savedTheme = localStorage.getItem('darkMode');
             const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
 
