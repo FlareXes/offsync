@@ -208,10 +208,10 @@
             const table = document.getElementById('passwordTable');
             const newRow = table.insertRow(0);
             newRow.innerHTML = `
-                <td><input type="text" placeholder="Enter site name" readonly></td>
-                <td><input type="text" placeholder="Enter username" readonly></td>
-                <td><input type="number" value="12" min="1" readonly></td>
-                <td><input type="number" value="1" min="1" readonly></td>
+                <td><input name="site" type="text" placeholder="Enter site name" readonly></td>
+                <td><input name="username" type="text" placeholder="Enter username" readonly></td>
+                <td><input name="length" type="number" value="12" min="1" readonly></td>
+                <td><input name="counter" type="number" value="1" min="1" readonly></td>
                 <td>
                     <button onclick="generateForRow(this)">Generate</button>
                     <button onclick="toggleEdit(this)">Edit</button>
@@ -243,20 +243,32 @@
                 endpoint = window.location.href + "/submit"
                 console.log(endpoint);
 
-                const rowData = Array.from(inputs).map(input => input.value);
+                const rowData = {};
+                inputs.forEach(input => {
+                    rowData[input.name] = input.value;
+                    console.log(input.name, input.value);
 
-                fetch(endpoint, {
+                });
+
+                console.log(JSON.stringify(rowData));
+
+
+                fetch('/profiles/submit', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify({ data: rowData }),
-                }).then(response => response.json())
-                    .then(data => console.log('Successfully saved:', data))
-                    .catch(error => console.error('Error saving data:', error));
+                    body: JSON.stringify(rowData),
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        alert(`Row saved! Server response: ${JSON.stringify(data)}`);
+                    })
+                    .catch((error) => {
+                        console.error('Error:', error);
+                        alert('Error saving row. Please try again.');
+                    });
 
-                console.log('Saving row data:', JSON.stringify({ data: rowData }),
-                );
             }
         }
 
