@@ -11,12 +11,39 @@ import (
 	// models "github.com/flarexes/offsync/go-web/models"
 )
 
+func getUsersByUserId(userId int64) ([]models.UserProfile, error) {
+	o := orm.NewOrm()
+	var profiles []models.UserProfile
+
+	// Query to get all users where UserId = 1
+	_, err := o.QueryTable("UserProfile").Filter("UserId", userId).All(&profiles)
+	if err != nil {
+		fmt.Println("Error retrieving profiles:", err)
+		return nil, err
+	}
+	return profiles, nil
+}
+
 type ProfilesController struct {
 	beego.Controller
 }
 
 func (c *ProfilesController) Get() {
-	c.TplName = "profiles.html"
+	userId := c.GetSession("user_id")
+	if userId == nil {
+		c.Redirect("/", 302)
+		return
+	}
+
+	profiles, err := getUsersByUserId(userId.(int64))
+	if err != nil {
+		c.Ctx.WriteString("Error retrieving profiles")
+		fmt.Println(err)
+		return
+	}
+	fmt.Println(profiles)
+	c.Data["Profiles"] = profiles
+	c.TplName = "profiles.tpl"
 }
 
 type Profile struct {
@@ -38,9 +65,11 @@ func (c *ProfilesController) Post() {
 	fmt.Println("Received row data:", profile)
 }
 
+// SAVE PROFILES SECTION
+
 func (c *ProfilesController) GetSave() {
-	userID := c.GetSession("user_id")
-	if userID == nil {
+	userId := c.GetSession("user_id")
+	if userId == nil {
 		c.Redirect("/", 302)
 		return
 	}
@@ -49,8 +78,8 @@ func (c *ProfilesController) GetSave() {
 
 func (c *ProfilesController) Save() {
 	c.TplName = "save.html"
-	userID := c.GetSession("user_id")
-	if userID == nil {
+	userId := c.GetSession("user_id")
+	if userId == nil {
 		c.Redirect("/", 302)
 		return
 	}
@@ -61,8 +90,7 @@ func (c *ProfilesController) Save() {
 		return
 	}
 
-	// profile := models.UserProfile{Id: userID.(int64), Site: p.Site, Username: p.Username, Length: p.Length, Counter: p.Counter}
-	profile := models.UserProfile{Id: userID.(int64), Site: p.Site, Username: p.Username, Length: p.Length, Counter: p.Counter}
+	profile := models.UserProfile{UserId: userId.(int64), Site: p.Site, Username: p.Username, Length: p.Length, Counter: p.Counter}
 	o := orm.NewOrm()
 	_, err := o.Insert(&profile)
 	if err != nil {

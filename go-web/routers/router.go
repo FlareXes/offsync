@@ -15,4 +15,5 @@ func init() {
 	beego.Router("/profiles/submit", &controllers.ProfilesController{}, "post:Post")
 	beego.Router("/profile/save", &controllers.ProfilesController{}, "get:GetSave")
 	beego.Router("/profile/save/submit", &controllers.ProfilesController{}, "post:Save")
+	beego.Router("/api", &controllers.OffsyncController{}, "post:API")
 }

@@ -11,7 +11,8 @@ type User struct {
 }
 
 type UserProfile struct {
-	Id       int64
+	Id       int64 `orm:"auto"`
+	UserId   int64
 	Site     string
 	Username string
 	Counter  string
